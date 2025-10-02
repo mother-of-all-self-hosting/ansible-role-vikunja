@@ -4,24 +4,24 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Perform Opengist installation tasks
-  when: opengist_enabled | bool
+- name: Perform Vikunja installation tasks
+  when: vikunja_enabled | bool
   tags:
     - setup-all
-    - setup-opengist
+    - setup-vikunja
     - install-all
-    - install-opengist
+    - install-vikunja
   block:
-    - name: Validate Opengist configuration
+    - name: Validate Vikunja configuration
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-    - name: Install Opengist
+    - name: Install Vikunja
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
-- name: Perform Opengist uninstallation tasks
-  when: not opengist_enabled | bool
+- name: Perform Vikunja uninstallation tasks
+  when: not vikunja_enabled | bool
   tags:
     - setup-all
-    - setup-opengist
+    - setup-vikunja
   block:
-    - name: Uninstall Opengist
+    - name: Uninstall Vikunja
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"

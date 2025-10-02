@@ -2,9 +2,9 @@
 galaxy_info:
   author: Suguru Hirahara
   company: progressiv
-  role_name: opengist
+  role_name: vikunja
   namespace: progressiv
-  description: Opengist
+  description: Vikunja
   platforms:
     - name: Debian
       versions:
