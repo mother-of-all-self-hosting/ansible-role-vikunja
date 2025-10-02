@@ -188,10 +188,6 @@ vikunja_systemd_wanted_services_list_default: []
 vikunja_systemd_wanted_services_list_auto: []
 vikunja_systemd_wanted_services_list_custom: []
 
-# Specify a random string for signing authentication tokens
-# generated with `openssl rand -hex 32` or in another way.
-vikunja_environment_variables_secret_key: ""
-
 # Specify a database driver to use
 # Valid values: mysql, postgres, sqlite
 vikunja_database_type: sqlite
@@ -207,6 +203,10 @@ vikunja_database_postgres_port: 5432
 vikunja_database_postgres_username: vikunja
 vikunja_database_postgres_password: ""
 vikunja_database_name: vikunja
+
+# Specify a random string for signing authentication tokens
+# generated with `pwgen -s 64 1` or in another way.
+vikunja_environment_variables_service_jwtsecret: ""
 
 # Specify a log level
 # Valid values: debug, info, warn, error, fatal

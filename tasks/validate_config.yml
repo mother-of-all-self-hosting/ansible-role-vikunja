@@ -17,7 +17,7 @@
     - vikunja_hostname
     - vikunja_path_prefix
     - vikunja_container_network
-    - vikunja_environment_variables_secret_key
+    - vikunja_environment_variables_service_jwtsecret
 
 - name: Fail if Vikunja database type is invalid
   ansible.builtin.fail:
