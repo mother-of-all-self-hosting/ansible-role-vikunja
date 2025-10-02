@@ -61,7 +61,7 @@ vikunja_container_ssh_host_bind_port: ""
 vikunja_container_network: "{{ vikunja_identifier }}"
 
 # The port number in the container
-vikunja_container_http_port: 6157
+vikunja_container_http_port: 3456
 
 # The port number in the container
 vikunja_container_ssh_port: 2222
