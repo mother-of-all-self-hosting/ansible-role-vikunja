@@ -199,6 +199,11 @@ vikunja_database_postgres_password: ""
 vikunja_database_postgres_sslmode: disable
 vikunja_database_name: vikunja
 
+# Specify Typesense instance configuration
+vikunja_environment_variables_typesense_enabled: false
+vikunja_environment_variables_typesense_url: ""
+vikunja_environment_variables_typesense_apikey: ""
+
 # Control if an external Redis instance is used
 vikunja_redis_hostname: ""
 vikunja_redis_port: 6379

@@ -58,6 +58,15 @@
     - vikunja_environment_variables_smtp_host
     - vikunja_environment_variables_smtp_from
 
+- name: Fail if Typesense settings for Vikunja are missing (and Typesense is enabled by setting host)
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) to enable Typesense integration.
+  when: "vikunja_environment_variables_typesense_enabled | bool and lookup('vars', item, default='') | string | length == 0"
+  with_items:
+    - vikunja_environment_variables_typesense_url
+    - vikunja_environment_variables_typesense_apikey
+
 - name: Run if Traefik is enabled
   when: vikunja_container_labels_traefik_enabled | bool
   block:

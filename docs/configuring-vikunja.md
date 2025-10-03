@@ -207,6 +207,26 @@ ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command='ver
 
 See [this page](https://vikunja.io/docs/cli/) for the list of available commands.
 
+### Typesense integration for enhanced search capabilities
+
+Vikunja supports [Typesense](https://typesense.org/), which allows fast fulltext search with fuzzy matching support. To enable it, the following configuration to your `vars.yml` file:
+
+```yaml
+vikunja_environment_variables_typesense_enabled: true
+vikunja_environment_variables_typesense_url: TYPESENSE_INSTANCE_URL_HERE
+vikunja_environment_variables_typesense_apikey: TYPESENSE_ADMIN_API_KEY_HERE
+```
+
+Make sure to replace `TYPESENSE_INSTANCE_URL_HERE` and `TYPESENSE_ADMIN_API_KEY_HERE` with your own values.
+
+After adding the configuration and restarting the service, it is necessary to run `vikunja index` to have Typesense index tasks in the Vikunja instance. You can invoke it by running the playbook below:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command='index'
+```
+
+Refer to [this page](https://vikunja.io/docs/typesense/) as well.
+
 ## Troubleshooting
 
 ### Check the service's logs
