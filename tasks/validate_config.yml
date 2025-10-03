@@ -25,6 +25,12 @@
       vikunja_database_type must be 'mysql', 'postgres', or 'sqlite'.
   when: "vikunja_database_type not in ['mysql', 'postgres', 'sqlite']"
 
+- name: Fail if Vikunja database SSL mode is invalid
+  ansible.builtin.fail:
+    msg: >-
+      vikunja_database_postgres_sslmode must be 'disable', 'require', 'verify-ca', or 'verify-full'.
+  when: "vikunja_database_postgres_sslmode not in ['disable', 'require', 'verify-ca', 'verify-full']"
+
 - name: Fail if required Vikunja + MySQL integration settings not defined
   ansible.builtin.fail:
     msg: >-
