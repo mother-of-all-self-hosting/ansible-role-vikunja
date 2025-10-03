@@ -193,7 +193,7 @@ vikunja_systemd_wanted_services_list_custom: []
 vikunja_database_type: sqlite
 
 # Specify database configuration
-vikunja_database_filename: vikunja.db
+vikunja_database_file: vikunja.db
 vikunja_database_mysql_hostname: ""
 vikunja_database_mysql_port: 3306
 vikunja_database_mysql_username: vikunja
@@ -202,6 +202,8 @@ vikunja_database_postgres_hostname: ""
 vikunja_database_postgres_port: 5432
 vikunja_database_postgres_username: vikunja
 vikunja_database_postgres_password: ""
+# Valid values: disable, require, verify-ca, verify-full
+vikunja_database_postgres_sslmode: disable
 vikunja_database_name: vikunja
 
 # Specify a random string for signing authentication tokens
