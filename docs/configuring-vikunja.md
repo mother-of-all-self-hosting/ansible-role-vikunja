@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 This is an [Ansible](https://www.ansible.com/) role which installs [Vikunja](https://vikunja.io/) to run as a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
-Vikunja is a self-hosted pastebin powered by Git. All snippets are stored in a Git repository and can be read and/or modified using standard Git commands, or with the web interface.
+Vikunja is a self-hosted to-do application.
 
 See the project's [documentation](https://vikunja.io/docs/) to learn what Vikunja does and why it might be useful to you.
 
@@ -185,7 +185,7 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 
 After running the command for installation, Vikunja becomes available at the specified hostname like `https://example.com`.
 
-To get started, open the URL with a web browser, and register the account. **Note that the first registered user becomes an administrator automatically.**
+To get started, create a user first and open the URL with a web browser to log in to the instance. You can create one on the web UI if `vikunja_environment_variables_service_enableregistration` is set to `true`. Alternatively, you can run the command below to create users.
 
 ### Creating users
 
