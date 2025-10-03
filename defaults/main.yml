@@ -227,6 +227,18 @@ vikunja_environment_variables_log_level: warn
 # Specify the log output
 vikunja_environment_variables_log_output: stdout,file
 
+# Specify mailer configuration
+vikunja_environment_variables_smtp_enabled: false
+vikunja_environment_variables_smtp_host: ""
+vikunja_environment_variables_smtp_port: 587
+vikunja_environment_variables_smtp_user: ""
+vikunja_environment_variables_smtp_password: ""
+vikunja_environment_variables_smtp_from: ""
+# Valid values: plain, login, cram-md5
+vikunja_environment_variables_smtp_authtype: plain
+vikunja_environment_variables_skiptlsverify: false
+vikunja_environment_variables_smtp_forcessl: false
+
 # Control if git operations (clone, pull, push) via HTTP are enabled
 vikunja_environment_variables_http_git_enabled: true
 

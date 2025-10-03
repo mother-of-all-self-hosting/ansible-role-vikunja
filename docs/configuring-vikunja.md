@@ -105,6 +105,44 @@ vikunja_redis_database: 0
 
 Make sure to replace `YOUR_REDIS_SERVER_HOSTNAME_HERE` and `YOUR_REDIS_SERVER_PASSWORD_HERE` with your own values.
 
+### Configure the mailer (optional)
+
+You can configure a SMTP mailer to enable it for signing up and resetting password. If it is disabled, all users are enabled right away and password reset will not be possible.
+
+To configure it, add the following configuration to your `vars.yml` file as below (adapt to your needs):
+
+```yaml
+# Set to `true` to enable mailer
+vikunja_environment_variables_smtp_enabled: true
+
+# Set the hostname of the SMTP server
+vikunja_environment_variables_smtp_host: ""
+
+# Set the port number of the SMTP server
+vikunja_environment_variables_smtp_port: 587
+
+# Set the username for the SMTP server
+vikunja_environment_variables_smtp_user: ""
+
+# Set the password for the SMTP server
+vikunja_environment_variables_smtp_password: ""
+
+# Set the email address that emails will be sent from
+vikunja_environment_variables_smtp_from: ""
+
+# Specify the SMTP Auth Type
+# Valid values: plain, login, cram-md5
+vikunja_environment_variables_smtp_authtype: plain
+
+# Set to `true` to skip verification of the TLS certificate on the server
+vikunja_environment_variables_skiptlsverify: false
+
+# Set to `true` to make Vikunja use SSL instead of STARTTLS.
+vikunja_environment_variables_smtp_forcessl: false
+```
+
+⚠️ **Note**: without setting an authentication method such as DKIM, SPF, and DMARC for your hostname, emails are most likely to be quarantined as spam at recipient's mail servers. If you have set up a mail server with the [MASH project's exim-relay Ansible role](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay), you can enable DKIM signing with it. Refer [its documentation](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md#enable-dkim-support-optional) for details.
+
 ### Configuring SSH port for Vikunja (optional)
 
 Vikunja uses port 2222 for its optional SSH feature.
