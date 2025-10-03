@@ -34,9 +34,6 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% if vikunja_container_http_host_bind_port %}
       -p {{ vikunja_container_http_host_bind_port }}:{{ vikunja_container_http_port }} \
       {% endif %}
-      {% if vikunja_container_ssh_host_bind_port %}
-      -p {{ vikunja_container_ssh_host_bind_port }}:{{ vikunja_container_ssh_port }} \
-      {% endif %}
       --env-file={{ vikunja_base_path }}/env \
       --label-file={{ vikunja_base_path }}/labels \
       --mount type=bind,src={{ vikunja_data_path }},dst=/app/vikunja/files \

@@ -53,19 +53,11 @@ vikunja_container_image_self_build_src_files_path: "{{ vikunja_base_path }}/dock
 # Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
 vikunja_container_http_host_bind_port: ""
 
-# Controls whether the container exposes its SSH port (tcp/2222 in the container).
-#
-# Takes an "<ip>:<port>" or "<port>" value (e.g. "127.0.0.1:2586"), or empty string to not expose.
-vikunja_container_ssh_host_bind_port: ""
-
 # The base container network. It will be auto-created by this role if it doesn't exist already.
 vikunja_container_network: "{{ vikunja_identifier }}"
 
 # The port number in the container
 vikunja_container_http_port: 3456
-
-# The port number in the container
-vikunja_container_ssh_port: 2222
 
 # A list of additional container networks that the container would be connected to.
 # The role does not create these networks, so make sure they already exist.
@@ -245,15 +237,6 @@ vikunja_environment_variables_smtp_forcessl: false
 
 # Control if the rate limit is enabled
 vikunja_environment_variables_ratelimit_enabled: false
-
-# Control if git operations (clone, pull, push) via HTTP are enabled
-vikunja_environment_variables_http_git_enabled: true
-
-# Control if Prometheus metrics endpoint is enabled at /metrics
-vikunja_environment_variables_metrics_enabled: false
-
-# Control if git operations (clone, pull, push) via SSH are enabled
-vikunja_environment_variables_ssh_git_enabled: true
 
 # Additional environment variables.
 vikunja_environment_variables_additional_variables: ""

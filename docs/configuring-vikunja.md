@@ -161,16 +161,6 @@ You can enable the rate limit by adding the following configuration to your `var
 vikunja_environment_variables_ratelimit_enabled: true
 ```
 
-### Configuring SSH port for Vikunja (optional)
-
-Vikunja uses port 2222 for its optional SSH feature.
-
-If you wish to expose the port, add the following configuration to your `vars.yml` file and adjust the port as you see fit.
-
-```yaml
-vikunja_container_ssh_host_bind_port: 2222
-```
-
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the component.
@@ -196,12 +186,6 @@ If you use the MASH playbook, the shortcut commands with the [`just` program](ht
 After running the command for installation, Vikunja becomes available at the specified hostname like `https://example.com`.
 
 To get started, open the URL with a web browser, and register the account. **Note that the first registered user becomes an administrator automatically.**
-
->[!WARNING]
-> On the current version (as of `1.11.0`) are there several inconveniences related to account management, which could lead you from being locked out of the administrator account.
->
-> - If you are a solo administrator on the instance, deleting yourself on `https://example.com/admin-panel/users` leads that there will be no administrator; you will basically be locked out of the admin panel and can no longer configure the instance with it.
-> - Be careful when setting both "Disable signup" and "Disable login form" to be effective on `https://example.com/admin-panel/configuration`; you will be locked out of the administrator account with incorrect OAuth settings.
 
 ### Creating users
 
