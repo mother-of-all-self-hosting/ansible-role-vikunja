@@ -76,7 +76,7 @@ vikunja_environment_variables_service_jwtsecret: YOUR_SECRET_KEY_HERE
 
 ### Specify database (optional)
 
-You can specify a database used by Vikunja. By default it is configured to use SQLite, and the SQLite database is stored in the directory specified with `vikunja_database_file`.
+You can specify a database used by Vikunja. By default it is configured to use SQLite, and the SQLite database is stored in the directory specified with `vikunja_database_path`.
 
 To use Postgres, add the following configuration to your `vars.yml` file:
 

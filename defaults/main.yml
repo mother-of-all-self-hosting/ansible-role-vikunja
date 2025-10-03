@@ -15,6 +15,7 @@ vikunja_enabled: true
 vikunja_identifier: vikunja
 vikunja_base_path: "/{{ vikunja_identifier }}"
 vikunja_data_path: "{{ vikunja_base_path }}/data"
+vikunja_database_path: "{{ vikunja_data_path }}/database"
 
 # renovate: datasource=docker depName=vikunja/vikunja
 vikunja_version: 1.0.0-rc2

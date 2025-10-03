@@ -44,6 +44,13 @@
       changed_when: vikunja_data_path_deletion_result.rc == 0
       failed_when: false
 
+    - name: Ensure Vikunja local database path does not exist if empty
+      ansible.builtin.command:
+        cmd: "rmdir {{ vikunja_database_path }}"
+      register: vikunja_database_path_deletion_result
+      changed_when: vikunja_database_path_deletion_result.rc == 0
+      failed_when: false
+
     - name: Ensure Vikunja base path does not exist if empty
       ansible.builtin.command:
         cmd: "rmdir {{ vikunja_base_path }}"
@@ -81,5 +88,23 @@
         +
         [
           "Note: As the local Vikunja instance has been removed, some old data remains in `" + vikunja_data_path + "`. Feel free to delete it."
+        ]
+      }}
+
+- name: Check existence of Vikunja local database path
+  ansible.builtin.stat:
+    path: "{{ vikunja_database_path }}"
+  register: vikunja_database_path_stat
+
+# We just want to notify the user. Deleting database is too destructive.
+- name: Notify if Vikunja local database remains
+  when: vikunja_database_path_stat.stat.exists | bool
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          "Note: As the local Vikunja instance has been removed, some old database remains in `" + vikunja_database_path + "`. Feel free to delete it."
         ]
       }}
