@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The command for running 'user create' commands: `ansible-playbook -i inventory/hosts setup.yml --tags=user-create-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE`
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `username`, `password`, and `email` variables need to be provided via --extra-vars"
+  when: "username is not defined or password is not defined or email is not defined"
+
+- name: Ensure Vikunja service is started
+  ansible.builtin.service:
+    name: "{{ vikunja_identifier }}"
+    state: started
+    daemon_reload: true
+  register: vikunja_start
+
+- name: Wait a while, so that Vikunja can manage to start
+  ansible.builtin.pause:
+    seconds: 7
+  when: vikunja_start.changed | bool
+
+- name: Run Vikunja 'user create' command
+  ansible.builtin.command:
+    cmd: "docker exec --user={{ vikunja_uid }}:{{ vikunja_gid }} {{ vikunja_identifier }} /app/vikunja/vikunja user create -e {{ email }} -p {{ password }} -u {{ username }}"

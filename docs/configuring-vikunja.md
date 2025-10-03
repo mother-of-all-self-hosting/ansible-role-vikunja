@@ -151,6 +151,8 @@ By default the role is configured to disable user registration. You can enable i
 vikunja_environment_variables_service_enableregistration: true
 ```
 
+Alternatively, you can also create users by running the command to run [`user create`](https://vikunja.io/docs/cli/#user-create) inside the container. See below in [this section](#creating-users) for the usage.
+
 ### Configuring rate limit
 
 You can enable the rate limit by adding the following configuration to your `vars.yml` file:
@@ -200,6 +202,14 @@ To get started, open the URL with a web browser, and register the account. **Not
 >
 > - If you are a solo administrator on the instance, deleting yourself on `https://example.com/admin-panel/users` leads that there will be no administrator; you will basically be locked out of the admin panel and can no longer configure the instance with it.
 > - Be careful when setting both "Disable signup" and "Disable login form" to be effective on `https://example.com/admin-panel/configuration`; you will be locked out of the administrator account with incorrect OAuth settings.
+
+### Creating users
+
+You can create users by running the command below to run [`user create`](https://vikunja.io/docs/cli/#user-create) inside the container.
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=user-create-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE
+```
 
 ## Troubleshooting
 
