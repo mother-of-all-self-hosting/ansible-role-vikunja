@@ -243,6 +243,9 @@ vikunja_environment_variables_smtp_authtype: plain
 vikunja_environment_variables_skiptlsverify: false
 vikunja_environment_variables_smtp_forcessl: false
 
+# Control if the rate limit is enabled
+vikunja_environment_variables_ratelimit_enabled: false
+
 # Control if git operations (clone, pull, push) via HTTP are enabled
 vikunja_environment_variables_http_git_enabled: true
 

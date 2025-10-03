@@ -151,6 +151,14 @@ By default the role is configured to disable user registration. You can enable i
 vikunja_environment_variables_service_enableregistration: true
 ```
 
+### Configuring rate limit
+
+You can enable the rate limit by adding the following configuration to your `vars.yml` file:
+
+```yaml
+vikunja_environment_variables_ratelimit_enabled: true
+```
+
 ### Configuring SSH port for Vikunja (optional)
 
 Vikunja uses port 2222 for its optional SSH feature.
