@@ -207,6 +207,12 @@ vikunja_database_postgres_password: ""
 vikunja_database_postgres_sslmode: disable
 vikunja_database_name: vikunja
 
+# Control if an external Redis instance is used
+vikunja_redis_hostname: ""
+vikunja_redis_port: 6379
+vikunja_redis_password: ""
+vikunja_redis_database: 0
+
 # Specify a random string for signing authentication tokens
 # generated with `pwgen -s 64 1` or in another way.
 vikunja_environment_variables_service_jwtsecret: ""
