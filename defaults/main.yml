@@ -220,6 +220,9 @@ vikunja_environment_variables_service_jwtsecret: ""
 # Specify the public facing URL
 vikunja_environment_variables_service_publicurl: "{{ vikunja_scheme }}://{{ vikunja_hostname }}"
 
+# Control if user registration is allowed
+vikunja_environment_variables_service_enableregistration: false
+
 # Specify a log level
 # Valid values: CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG
 vikunja_environment_variables_log_level: INFO
