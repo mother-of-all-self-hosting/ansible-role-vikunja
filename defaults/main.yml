@@ -208,6 +208,9 @@ vikunja_database_name: vikunja
 # generated with `pwgen -s 64 1` or in another way.
 vikunja_environment_variables_service_jwtsecret: ""
 
+# Specify the public facing URL
+vikunja_environment_variables_service_publicurl: "{{ vikunja_scheme }}://{{ vikunja_hostname }}"
+
 # Specify a log level
 # Valid values: debug, info, warn, error, fatal
 vikunja_environment_variables_log_level: warn
