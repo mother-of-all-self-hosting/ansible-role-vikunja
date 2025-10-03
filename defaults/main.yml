@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# Project source code URL: https://github.com/thomiceli/vikunja
+# Project source code URL: https://github.com/vikunja/vikunja
 
 vikunja_enabled: true
 
@@ -16,8 +16,8 @@ vikunja_identifier: vikunja
 vikunja_base_path: "/{{ vikunja_identifier }}"
 vikunja_data_path: "{{ vikunja_base_path }}/data"
 
-# renovate: datasource=docker depName=thomiceli/vikunja
-vikunja_version: 1.11.0
+# renovate: datasource=docker depName=vikunja/vikunja
+vikunja_version: 1.0.0-rc2
 
 vikunja_uid: ""
 vikunja_gid: ""
@@ -34,16 +34,16 @@ vikunja_hostname: ""
 # technical limitations.
 vikunja_path_prefix: /
 
-vikunja_container_image: "{{ vikunja_container_image_registry_prefix }}thomiceli/vikunja:{{ vikunja_container_image_tag }}"
+vikunja_container_image: "{{ vikunja_container_image_registry_prefix }}vikunja/vikunja:{{ vikunja_container_image_tag }}"
 vikunja_container_image_tag: "{{ vikunja_version }}"
 vikunja_container_image_registry_prefix: "{{ vikunja_container_image_registry_prefix_upstream }}"
 vikunja_container_image_registry_prefix_upstream: "{{ vikunja_container_image_registry_prefix_upstream_default }}"
-vikunja_container_image_registry_prefix_upstream_default: ghcr.io/
+vikunja_container_image_registry_prefix_upstream_default: docker.io/
 vikunja_container_image_force_pull: "{{ vikunja_container_image.endswith(':latest') }}"
 
 vikunja_container_image_self_build: false
-vikunja_container_image_self_build_name: "thomiceli/vikunja:{{ vikunja_container_image_self_build_repo_version }}"
-vikunja_container_image_self_build_repo: "https://github.com/thomiceli/vikunja.git"
+vikunja_container_image_self_build_name: "go-vikunja/vikunja:{{ vikunja_container_image_self_build_repo_version }}"
+vikunja_container_image_self_build_repo: "https://github.com/go-vikunja/vikunja.git"
 vikunja_container_image_self_build_repo_version: "{{ 'v' + vikunja_version if vikunja_version != 'latest' else 'main' }}"
 vikunja_container_image_self_build_src_files_path: "{{ vikunja_base_path }}/docker-src"
 
