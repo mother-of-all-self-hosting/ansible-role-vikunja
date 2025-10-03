@@ -196,5 +196,5 @@ You can find the logs in [systemd-journald](https://www.freedesktop.org/software
 If you want to increase the verbosity, add the following configuration to your `vars.yml` file:
 
 ```yaml
-vikunja_environment_variables_log_level: debug
+vikunja_environment_variables_log_level: DEBUG
 ```

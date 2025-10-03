@@ -221,11 +221,12 @@ vikunja_environment_variables_service_jwtsecret: ""
 vikunja_environment_variables_service_publicurl: "{{ vikunja_scheme }}://{{ vikunja_hostname }}"
 
 # Specify a log level
-# Valid values: debug, info, warn, error, fatal
-vikunja_environment_variables_log_level: warn
+# Valid values: CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG
+vikunja_environment_variables_log_level: INFO
 
 # Specify the log output
-vikunja_environment_variables_log_output: stdout,file
+# Valid values: text, structured
+vikunja_environment_variables_log_format: text
 
 # Specify mailer configuration
 vikunja_environment_variables_smtp_enabled: false
