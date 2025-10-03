@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2023 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The command for running CLI commands inside the container: `ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command=CLI_COMMAND_HERE`
+
+- name: Fail if playbook called incorrectly
+  ansible.builtin.fail:
+    msg: "The `command` variable needs to be provided via --extra-vars"
+  when: "command is not defined"
+
+- name: Ensure Vikunja service is started
+  ansible.builtin.service:
+    name: "{{ vikunja_identifier }}"
+    state: started
+    daemon_reload: true
+  register: vikunja_start
+
+- name: Wait a while, so that Vikunja can manage to start
+  ansible.builtin.pause:
+    seconds: 7
+  when: vikunja_start.changed | bool
+
+- name: Run Vikunja CLI command
+  ansible.builtin.command:
+    cmd: "docker exec --user={{ vikunja_uid }}:{{ vikunja_gid }} {{ vikunja_identifier }} /app/vikunja/vikunja {{ command }}"
+  failed_when: false
+  register: vikunja_cli_command_result
+
+- name: Display the Vikunja CLI command result
+  ansible.builtin.debug:
+    msg: "Vikunja CLI command result: {{ vikunja_cli_command_result.stdout }}"

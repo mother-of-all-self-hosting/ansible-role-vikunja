@@ -211,6 +211,18 @@ You can create users by running the command below to run [`user create`](https:/
 ansible-playbook -i inventory/hosts setup.yml --tags=user-create-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE
 ```
 
+### Running the CLI command
+
+It is possible to run commands on the command line inside the container by running the `cli-vikunja` tag, setting the `command` extra variable.
+
+For example, you can run the command `version` by running the playbook with the tag as below:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command='version'
+```
+
+See [this page](https://vikunja.io/docs/cli/) for the list of available commands.
+
 ## Troubleshooting
 
 ### Check the service's logs

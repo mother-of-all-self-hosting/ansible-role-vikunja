@@ -17,6 +17,14 @@
     - name: Install Vikunja
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
 
+- name: Perform Vikunja CLI command tasks
+  when: vikunja_enabled | bool
+  tags:
+    - cli-vikunja
+  block:
+    - name: Run Vikunja CLI command
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/cli.yml"
+
 - name: Perform Vikunja user creation tasks
   when: vikunja_enabled | bool
   tags:
