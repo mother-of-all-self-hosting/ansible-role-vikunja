@@ -109,7 +109,7 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `vikunja_environment_variables_additional_variables` variable
 
-See [the official documentation](https://vikunja.io/docs/configuration/cheat-sheet.html) for a complete list of Vikunja's config options that you could put in `vikunja_environment_variables_additional_variables`.
+See [the official documentation](https://vikunja.io/docs/config-options/) for a complete list of Vikunja's config options that you could put in `vikunja_environment_variables_additional_variables`.
 
 ## Installing
 
