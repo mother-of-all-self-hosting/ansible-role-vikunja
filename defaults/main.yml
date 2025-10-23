@@ -204,7 +204,7 @@ vikunja_environment_variables_typesense_enabled: false
 vikunja_environment_variables_typesense_url: ""
 vikunja_environment_variables_typesense_apikey: ""
 
-# Control if an external Redis instance is used
+# Specify Redis configuration
 vikunja_redis_hostname: ""
 vikunja_redis_port: 6379
 vikunja_redis_password: ""
