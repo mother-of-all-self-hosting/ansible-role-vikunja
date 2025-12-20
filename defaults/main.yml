@@ -210,6 +210,9 @@ vikunja_redis_port: 6379
 vikunja_redis_password: ""
 vikunja_redis_database: 0
 
+# Specify the timezone
+vikunja_environment_variables_tz: UTC
+
 # Specify a random string for signing authentication tokens
 # generated with `pwgen -s 64 1` or in another way.
 vikunja_environment_variables_service_jwtsecret: ""
