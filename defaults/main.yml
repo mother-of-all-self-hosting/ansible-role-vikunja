@@ -122,7 +122,7 @@ vikunja_container_labels_additional_labels: "{{ vikunja_container_labels_additio
 vikunja_container_labels_additional_labels_auto: {}
 vikunja_container_labels_additional_labels_custom: {}
 
-# A list of extra arguments to pass to the container (`docker run` command)
+# A list of extra arguments to pass to the container (`docker create` command)
 vikunja_container_extra_arguments: "{{ vikunja_container_extra_arguments_auto + vikunja_container_extra_arguments_custom }}"
 vikunja_container_extra_arguments_auto: []
 vikunja_container_extra_arguments_custom: []
