@@ -28,7 +28,7 @@ vikunja_scheme: https
 # The hostname at which Vikunja is served.
 vikunja_hostname: ""
 
-# The path at which Vikunja is exposed.
+# The path at which Vikunja is served.
 # This value must either be `/` or not end with a slash (e.g. `/vikunja`).
 #
 # Hosting Vikunja under a subpath does not seem to be possible due to Vikunja's
