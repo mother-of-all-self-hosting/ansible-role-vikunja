@@ -56,4 +56,6 @@ traefik.http.routers.{{ vikunja_identifier }}.tls.certResolver={{ vikunja_contai
 traefik.http.services.{{ vikunja_identifier }}.loadbalancer.server.port={{ vikunja_container_http_port }}
 {% endif %}
 
-{{ vikunja_container_labels_additional_labels }}
+{% for arg in vikunja_container_labels_additional_labels %}
+{{ arg }}
+{% endfor %}
