@@ -115,7 +115,7 @@ vikunja_container_labels_traefik_additional_response_headers_custom: {}
 # To add your own custom labels, use `vikunja_container_labels_additional_labels_custom`
 #
 # Example:
-# vikunja_container_labels_additional_labels_custom: |
+# vikunja_container_labels_additional_labels_custom:
 #   - my.label=1
 #   - another.label="here"
 vikunja_container_labels_additional_labels: "{{ vikunja_container_labels_additional_labels_auto + vikunja_container_labels_additional_labels_custom }}"
