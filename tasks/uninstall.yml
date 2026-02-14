@@ -63,6 +63,7 @@
       community.docker.docker_network:
         name: "{{ vikunja_container_network }}"
         state: absent
+      register: vikunja_network_deletion_result
 
     - name: Ensure Vikunja container network does not exist via ansible.builtin.command
       when: devture_systemd_docker_base_container_network_creation_method == 'command'
@@ -70,8 +71,8 @@
         cmd: >-
           {{ devture_systemd_docker_base_host_command_docker }} network rm
           {{ vikunja_container_network }}
-      register: network_deletion_result
-      changed_when: vikunja_container_network in network_deletion_result.stdout
+      register: vikunja_network_deletion_result
+      changed_when: vikunja_container_network in vikunja_network_deletion_result.stdout
 
 - name: Check existence of Vikunja local data path
   ansible.builtin.stat:
