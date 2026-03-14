@@ -193,7 +193,7 @@ To get started, create a user first and open the URL with a web browser to log i
 You can create users by running the command below to run [`user create`](https://vikunja.io/docs/cli/#user-create) inside the container.
 
 ```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=user-create-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE
+ansible-playbook -i inventory/hosts setup.yml --tags=create-user-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE
 ```
 
 ### Running the CLI command

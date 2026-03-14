@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# The command for running 'user create' commands: `ansible-playbook -i inventory/hosts setup.yml --tags=user-create-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE`
+# The command for running 'user create' commands: `ansible-playbook -i inventory/hosts setup.yml --tags=create-user-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE`
 
 - name: Fail if playbook called incorrectly
   ansible.builtin.fail:
