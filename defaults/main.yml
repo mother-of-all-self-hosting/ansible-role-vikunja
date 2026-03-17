@@ -275,7 +275,7 @@ vikunja_environment_variables_log_level: INFO
 vikunja_environment_variables_log_format: text
 
 # Specify mailer configuration
-vikunja_environment_variables_smtp_enabled: false
+vikunja_mailer_enabled: false
 vikunja_environment_variables_smtp_host: ""
 vikunja_environment_variables_smtp_port: 587
 vikunja_environment_variables_smtp_user: ""

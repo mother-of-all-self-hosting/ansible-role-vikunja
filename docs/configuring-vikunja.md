@@ -113,7 +113,7 @@ To configure it, add the following configuration to your `vars.yml` file as belo
 
 ```yaml
 # Set to `true` to enable mailer
-vikunja_environment_variables_smtp_enabled: true
+vikunja_mailer_enabled: true
 
 # Set the hostname of the SMTP server
 vikunja_environment_variables_smtp_host: ""
