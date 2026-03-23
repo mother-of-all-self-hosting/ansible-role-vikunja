@@ -1,7 +1,7 @@
 {#
 SPDX-FileCopyrightText: 2023 Slavi Pantaleev
 SPDX-FileCopyrightText: 2024 Nikita Chernyi
-SPDX-FileCopyrightText: 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 #}
@@ -38,6 +38,12 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       --mount type=bind,src={{ vikunja_data_path }},dst=/app/vikunja/files \
       {% if vikunja_database_type == 'sqlite' %}
       --mount type=bind,src={{ vikunja_database_path }},dst=/app/vikunja/database \
+      {% endif %}
+      {% if vikunja_database_mysql_socket_enabled %}
+      --mount type=bind,src={{ vikunja_database_mysql_socket_path_host }},dst={{ vikunja_database_mysql_socket_path_container }} \
+      {% endif %}
+      {% if vikunja_database_postgres_socket_enabled %}
+      --mount type=bind,src={{ vikunja_database_postgres_socket_path_host }},dst={{ vikunja_database_postgres_socket_path_container }} \
       {% endif %}
       {% for volume in vikunja_container_additional_volumes %}
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options | default('') else '' }} \

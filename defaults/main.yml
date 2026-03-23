@@ -1,9 +1,9 @@
-# SPDX-FileCopyrightText: 2023 - 2024 Nikita Chernyi
-# SPDX-FileCopyrightText: 2023 - 2025 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023, 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
 # SPDX-FileCopyrightText: 2025 MASH project contributors
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -224,6 +224,12 @@ vikunja_container_cleanup_command: |
   echo "Failed to remove stale container {{ vikunja_identifier }} after {{ vikunja_container_cleanup_timeout_seconds }} attempts" >&2;
   exit 1
 
+########################################################################
+#                                                                      #
+# database                                                             #
+#                                                                      #
+########################################################################
+
 # Specify a database driver to use
 # Valid values: mysql, postgres, sqlite
 vikunja_database_type: sqlite
@@ -243,6 +249,34 @@ vikunja_database_postgres_password: ""
 # Valid values: see https://www.postgresql.org/docs/11/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS
 vikunja_database_postgres_sslmode: disable
 vikunja_database_name: vikunja
+
+# Control if the database connection to MySQL is made via a Unix socket
+vikunja_database_mysql_socket_enabled: true
+
+# Specify the path to the MySQL Unix socket path inside the Vikunja container
+vikunja_database_mysql_socket_path_container: /run-mysqld
+
+# Specify the path to the MySQL Unix socket path on the host (bind-mount source)
+vikunja_database_mysql_socket_path_host: ""
+
+# Control if the database connection to Postgres is made via a Unix socket
+vikunja_database_postgres_socket_enabled: true
+
+# Specify the path to the Postgres Unix socket path inside the Vikunja container
+vikunja_database_postgres_socket_path_container: /run-postgres
+
+# Specify the path to the Postgres Unix socket path on the host (bind-mount source)
+vikunja_database_postgres_socket_path_host: ""
+
+# Specify database host address and port or absolute path for Unix socket
+vikunja_database_environment_variables_database_host_mysql: "{{ vikunja_database_mysql_socket_path_container + '/mysqld.sock' if vikunja_database_mysql_socket_enabled else vikunja_database_mysql_hostname + ':' + vikunja_database_mysql_port }}"
+vikunja_database_environment_variables_database_host_postgres: "{{ vikunja_database_postgres_socket_path_container if vikunja_database_postgres_socket_enabled else vikunja_database_postgres_hostname + ':' + vikunja_database_postgres_port }}"
+
+########################################################################
+#                                                                      #
+# /database                                                            #
+#                                                                      #
+########################################################################
 
 # Specify Typesense instance configuration
 vikunja_environment_variables_typesense_enabled: false
