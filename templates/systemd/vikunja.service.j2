@@ -45,6 +45,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% if vikunja_database_postgres_socket_enabled %}
       --mount type=bind,src={{ vikunja_database_postgres_socket_path_host }},dst={{ vikunja_database_postgres_socket_path_container }} \
       {% endif %}
+      {% if vikunja_redis_socket_enabled %}
+      --mount type=bind,src={{ vikunja_redis_socket_path_host }},dst={{ vikunja_redis_socket_path_container }} \
+      {% endif %}
       {% for volume in vikunja_container_additional_volumes %}
       --mount type={{ volume.type | default('bind' if '/' in volume.src else 'volume') }},src={{ volume.src }},dst={{ volume.dst }}{{ (',' + volume.options) if volume.options | default('') else '' }} \
       {% endfor %}

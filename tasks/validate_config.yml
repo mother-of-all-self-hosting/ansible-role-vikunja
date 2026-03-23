@@ -19,14 +19,16 @@
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item }}`).
-  when: "lookup('vars', item, default='') | string | length == 0"
+  when: "item.when | bool and lookup('vars', item.name, default='') | string | length == 0"
   with_items:
-    - vikunja_uid
-    - vikunja_gid
-    - vikunja_hostname
-    - vikunja_path_prefix
-    - vikunja_container_network
-    - vikunja_environment_variables_service_jwtsecret
+    - { "name": "vikunja_uid", when: true }
+    - { "name": "vikunja_gid", when: true }
+    - { "name": "vikunja_hostname", when: true }
+    - { "name": "vikunja_path_prefix", when: true }
+    - { "name": "vikunja_container_network", when: true }
+    - { "name": "vikunja_environment_variables_service_jwtsecret", when: true }
+    - { "name": "vikunja_redis_socket_path_host", when: "{{ vikunja_redis_socket_enabled }}" }
+    - { "name": "vikunja_redis_hostname", when: "{{ not vikunja_redis_socket_enabled }}" }
 
 - name: Fail if Vikunja database type is invalid
   ansible.builtin.fail:
