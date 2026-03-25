@@ -26,6 +26,7 @@
     - { "name": "vikunja_hostname", when: true }
     - { "name": "vikunja_path_prefix", when: true }
     - { "name": "vikunja_container_network", when: true }
+    - { "name": "vikunja_database_type", when: true }
     - { "name": "vikunja_environment_variables_service_jwtsecret", when: true }
     - { "name": "vikunja_redis_socket_path_host", when: "{{ vikunja_redis_socket_enabled }}" }
     - { "name": "vikunja_redis_hostname", when: "{{ not vikunja_redis_socket_enabled }}" }

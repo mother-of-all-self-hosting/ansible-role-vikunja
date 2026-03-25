@@ -232,7 +232,7 @@ vikunja_container_cleanup_command: |
 
 # Specify a database driver to use
 # Valid values: mysql, postgres, sqlite
-vikunja_database_type: sqlite
+vikunja_database_type: ""
 
 # Specify database configuration
 vikunja_database_file: vikunja.db
