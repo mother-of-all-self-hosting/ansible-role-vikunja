@@ -37,61 +37,63 @@
       vikunja_database_type must be 'mysql', 'postgres', or 'sqlite'.
   when: "vikunja_database_type not in ['mysql', 'postgres', 'sqlite']"
 
-- name: Fail if required Vikunja + MySQL integration settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`) when `vikunja_database_type` is `mysql`
-  when: "vikunja_database_type == 'mysql' and lookup('vars', item, default='') | string | length == 0"
-  with_items:
-    - vikunja_database_mysql_password
+- name: Run if Vikunja + MySQL integration is enabled
+  when: vikunja_database_type == 'mysql'
+  block:
+    - name: Fail if required Vikunja + MySQL integration settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when `vikunja_database_type` is `mysql`
+      when: "lookup('vars', item, default='') | string | length == 0"
+      with_items:
+        - vikunja_database_mysql_password
 
-- name: Fail if MySQL socket host path is missing when Unix socket is enabled
-  ansible.builtin.fail:
-    msg: >-
-      You need to define `vikunja_database_mysql_socket_path_host` when `vikunja_database_type` is `mysql`
-      and `vikunja_database_mysql_socket_enabled` is `true`.
-  when: >-
-    vikunja_database_type == 'mysql' and
-    vikunja_database_mysql_socket_enabled and
-    vikunja_database_mysql_socket_path_host | string | length == 0
+    - name: Fail if MySQL socket host path for Vikunja is missing when Unix socket is enabled
+      ansible.builtin.fail:
+        msg: >-
+          You need to define `vikunja_database_mysql_socket_path_host` when `vikunja_database_type` is `mysql`
+          and `vikunja_database_mysql_socket_enabled` is `true`.
+      when: >-
+        vikunja_database_mysql_socket_enabled and
+        vikunja_database_mysql_socket_path_host | string | length == 0
 
-- name: Fail if MySQL hostname is missing when Unix socket is disabled
-  ansible.builtin.fail:
-    msg: >-
-      You need to define `vikunja_database_mysql_hostname` when `vikunja_database_type` is `mysql`
-      and `vikunja_database_mysql_socket_enabled` is `false`.
-  when: >-
-    vikunja_database_type == 'mysql' and
-    not vikunja_database_mysql_socket_enabled and
-    vikunja_database_mysql_hostname | string | length == 0
+    - name: Fail if MySQL hostname for Vikunja is missing when Unix socket is disabled
+      ansible.builtin.fail:
+        msg: >-
+          You need to define `vikunja_database_mysql_hostname` when `vikunja_database_type` is `mysql`
+          and `vikunja_database_mysql_socket_enabled` is `false`.
+      when: >-
+        not vikunja_database_mysql_socket_enabled and
+        vikunja_database_mysql_hostname | string | length == 0
 
-- name: Fail if required Vikunja + Postgres integration settings not defined
-  ansible.builtin.fail:
-    msg: >-
-      You need to define a required configuration setting (`{{ item }}`) when `vikunja_database_type` is `postgres`
-  when: "vikunja_database_type == 'postgres' and lookup('vars', item, default='') | string | length == 0"
-  with_items:
-    - vikunja_database_postgres_password
+- name: Run if Vikunja + Postgres integration is enabled
+  when: vikunja_database_type == 'postgres'
+  block:
+    - name: Fail if required Vikunja + Postgres integration settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`) when `vikunja_database_type` is `postgres`
+      when: "lookup('vars', item, default='') | string | length == 0"
+      with_items:
+        - vikunja_database_postgres_password
 
-- name: Fail if Postgres socket host path is missing when Unix socket is enabled
-  ansible.builtin.fail:
-    msg: >-
-      You need to define `vikunja_database_postgres_socket_path_host` when `vikunja_database_type` is `postgres`
-      and `vikunja_database_postgres_socket_enabled` is `true`.
-  when: >-
-    vikunja_database_type == 'postgres' and
-    vikunja_database_postgres_socket_enabled and
-    vikunja_database_postgres_socket_path_host | string | length == 0
+    - name: Fail if Postgres socket host path for Vikunja is missing when Unix socket is enabled
+      ansible.builtin.fail:
+        msg: >-
+          You need to define `vikunja_database_postgres_socket_path_host` when `vikunja_database_type` is `postgres`
+          and `vikunja_database_postgres_socket_enabled` is `true`.
+      when: >-
+        vikunja_database_postgres_socket_enabled and
+        vikunja_database_postgres_socket_path_host | string | length == 0
 
-- name: Fail if Postgres hostname is missing when Unix socket is disabled
-  ansible.builtin.fail:
-    msg: >-
-      You need to define `vikunja_database_postgres_hostname` when `vikunja_database_type` is `postgres`
-      and `vikunja_database_postgres_socket_enabled` is `false`.
-  when: >-
-    vikunja_database_type == 'postgres' and
-    not vikunja_database_postgres_socket_enabled and
-    vikunja_database_postgres_hostname | string | length == 0
+    - name: Fail if Postgres hostname for Vikunja is missing when Unix socket is disabled
+      ansible.builtin.fail:
+        msg: >-
+          You need to define `vikunja_database_postgres_hostname` when `vikunja_database_type` is `postgres`
+          and `vikunja_database_postgres_socket_enabled` is `false`.
+      when: >-
+        not vikunja_database_postgres_socket_enabled and
+        vikunja_database_postgres_hostname | string | length == 0
 
 - name: Fail if SMTP settings are missing (and SMTP is enabled by setting host)
   ansible.builtin.fail:
