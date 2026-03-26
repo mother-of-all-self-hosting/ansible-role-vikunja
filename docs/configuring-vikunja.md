@@ -120,6 +120,9 @@ Also, you can optionally enable a [Redis](https://redis.io/) server for managing
 To enable Redis for Vikunja, add the following configuration to your `vars.yml` file, so that the Vikunja instance will connect to the server. Note that the role is by default configured to establish connection with the Redis server via the Unix socket.
 
 ```yaml
+# Set to `true` to enable Redis integration
+vikunja_environment_variables_redis_enabled: true
+
 # Specify the path to the Redis Unix socket path on the host (bind-mount source)
 vikunja_redis_socket_path_host: ""
 
