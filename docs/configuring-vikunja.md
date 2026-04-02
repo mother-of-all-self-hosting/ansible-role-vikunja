@@ -75,7 +75,9 @@ You also need to set a random string used for verifying issued JWT tokens. To do
 vikunja_environment_variables_service_jwtsecret: YOUR_SECRET_KEY_HERE
 ```
 
-### Specify database
+### Configuring database
+
+#### Specify database
 
 It is necessary to select database used by Vikunja from a MySQL compatible database, Postgres, and SQLite.
 
@@ -89,7 +91,7 @@ Set `mysql` to use a MySQL compatible database and `sqlite` to use SQLite, respe
 
 For other settings, check variables such as `vikunja_database_postgres_*` and `vikunja_database_mysql_*` on [`defaults/main.yml`](../defaults/main.yml).
 
-### Configuring connection to database server (optional)
+#### Configuring connection to the database server (optional)
 
 By default the role is configured to establish connection with the database server via the Unix socket. You can mount the Unix socket by adding the following configuration to your `vars.yml` file:
 
