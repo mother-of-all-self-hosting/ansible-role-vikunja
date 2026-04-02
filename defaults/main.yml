@@ -286,7 +286,7 @@ vikunja_database_environment_variables_database_host_postgres: "{{ vikunja_datab
 
 # Specify Redis configuration
 vikunja_environment_variables_redis_enabled: false
-vikunja_redis_hostname: "{{ vikunja_redis_socket_path_container + '/valkey.sock' if vikunja_redis_socket_enabled else '' }}"
+vikunja_redis_hostname: "{{ vikunja_redis_socket_path_container + vikunja_redis_socket_path if vikunja_redis_socket_enabled else '' }}"
 vikunja_redis_port: 6379
 vikunja_redis_password: ""
 vikunja_redis_database: 0
@@ -300,6 +300,8 @@ vikunja_redis_socket_path_host: ""
 
 # Specify the path to the Redis Unix socket path inside the Vikunja container
 vikunja_redis_socket_path_container: /run-valkey
+
+vikunja_redis_socket_path: /valkey.sock
 
 ########################################################################
 #                                                                      #
