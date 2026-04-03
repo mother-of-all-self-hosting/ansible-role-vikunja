@@ -293,13 +293,12 @@ vikunja_redis_database: 0
 # Control if the connection to Redis is made via a Unix socket
 vikunja_redis_socket_enabled: true
 
-# Specify the path to the Redis Unix socket path on the host (bind-mount source)
-vikunja_redis_socket_path_host: ""
-
 # Specify the path to the Redis Unix socket path inside the Vikunja container
 vikunja_redis_socket_path_container: /run-valkey
-
 vikunja_redis_socket_path: /valkey.sock
+
+# Specify the path to the Redis Unix socket path on the host (bind-mount source)
+vikunja_redis_socket_path_host: ""
 
 vikunja_environment_variables_redis_host: "{{ vikunja_redis_hostname }}{% if vikunja_redis_hostname != '' and not vikunja_redis_socket_enabled %}:{{ vikunja_redis_port }}{% endif %}" # include port number if connection to Redis via Unix socket is disabled
 
