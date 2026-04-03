@@ -94,12 +94,12 @@
         vikunja_database_postgres_hostname | string | length == 0
 
 - name: Run if Vikunja + Redis integration is enabled
-  when: vikunja_environment_variables_redis_enabled | bool
+  when: vikunja_environment_variables_redis_host != ''
   block:
     - name: Fail if Redis socket host path for Vikunja is missing when Unix socket is enabled
       ansible.builtin.fail:
         msg: >-
-          You need to define `vikunja_redis_socket_path_host` when `vikunja_environment_variables_redis_enabled` is `true`
+          You need to define `vikunja_redis_socket_path_host` when `vikunja_environment_variables_redis_host` is set
           and `vikunja_redis_socket_enabled` is `true`.
       when: >-
         vikunja_redis_socket_enabled and
@@ -108,7 +108,7 @@
     - name: Fail if Redis hostname for Vikunja is missing when Unix socket is disabled
       ansible.builtin.fail:
         msg: >-
-          You need to define `vikunja_redis_hostname` when `vikunja_environment_variables_redis_enabled` is `true`
+          You need to define `vikunja_redis_hostname` when `vikunja_environment_variables_redis_host` is set
           and `vikunja_redis_socket_enabled` is `false`.
       when: >-
         not vikunja_redis_socket_enabled and

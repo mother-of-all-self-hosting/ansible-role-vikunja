@@ -285,12 +285,10 @@ vikunja_database_environment_variables_database_host_postgres: "{{ vikunja_datab
 ########################################################################
 
 # Specify Redis configuration
-vikunja_environment_variables_redis_enabled: false
-vikunja_redis_hostname: "{{ vikunja_redis_socket_path_container + vikunja_redis_socket_path if vikunja_redis_socket_enabled else '' }}"
+vikunja_redis_hostname: "{{ vikunja_redis_socket_path_container + vikunja_redis_socket_path if vikunja_redis_socket_enabled and vikunja_redis_socket_path_host != '' else '' }}"
 vikunja_redis_port: 6379
 vikunja_redis_password: ""
 vikunja_redis_database: 0
-vikunja_environment_variables_redis_host: "{{ vikunja_redis_hostname }}{% if not vikunja_redis_socket_enabled %}:{{ vikunja_redis_port }}{% endif %}" # include port number if connection to Redis via Unix socket is disabled
 
 # Control if the connection to Redis is made via a Unix socket
 vikunja_redis_socket_enabled: true
@@ -302,6 +300,8 @@ vikunja_redis_socket_path_host: ""
 vikunja_redis_socket_path_container: /run-valkey
 
 vikunja_redis_socket_path: /valkey.sock
+
+vikunja_environment_variables_redis_host: "{{ vikunja_redis_hostname }}{% if vikunja_redis_hostname != '' and not vikunja_redis_socket_enabled %}:{{ vikunja_redis_port }}{% endif %}" # include port number if connection to Redis via Unix socket is disabled
 
 ########################################################################
 #                                                                      #
