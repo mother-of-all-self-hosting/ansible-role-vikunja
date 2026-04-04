@@ -115,11 +115,11 @@ vikunja_database_mysql_socket_enabled: false
 vikunja_database_postgres_socket_enabled: false
 ```
 
-### Configuring a Redis server (optional)
+### Configuring a Redis database (optional)
 
-Also, you can optionally enable a [Redis](https://redis.io/) server for managing cache.
+You can optionally enable a [Redis](https://redis.io/) database for the Vikunja instance. KeyDB or Valkey can also be used instead.
 
-To enable Redis for Vikunja, add the following configuration to your `vars.yml` file, so that the Vikunja instance will connect to the server. Note that the role is by default configured to establish connection with the Redis server via the Unix socket.
+To enable the Redis database for Vikunja, add the following configuration to your `vars.yml` file. Note that the role is by default configured to establish connection with the Redis server via the Unix socket.
 
 ```yaml
 # Specify the path to the Redis Unix socket path on the host (bind-mount source)
