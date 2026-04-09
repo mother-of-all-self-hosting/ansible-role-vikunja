@@ -72,7 +72,7 @@ After adjusting the hostname, make sure to adjust your DNS records to point the 
 You also need to set a random string used for verifying issued JWT tokens. To do so, add the following configuration to your `vars.yml` file. The value can be generated with `pwgen -s 64 1` or in another way.
 
 ```yaml
-vikunja_environment_variables_service_jwtsecret: YOUR_SECRET_KEY_HERE
+vikunja_environment_variables_service_secret: YOUR_SECRET_KEY_HERE
 ```
 
 ### Configuring database

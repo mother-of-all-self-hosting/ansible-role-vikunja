@@ -325,7 +325,7 @@ vikunja_environment_variables_tz: UTC
 
 # Specify a random string for signing authentication tokens
 # generated with `pwgen -s 64 1` or in another way.
-vikunja_environment_variables_service_jwtsecret: ""
+vikunja_environment_variables_service_secret: ""
 
 # Specify the public facing URL
 vikunja_environment_variables_service_publicurl: "{{ vikunja_scheme }}://{{ vikunja_hostname }}"
