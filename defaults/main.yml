@@ -94,6 +94,21 @@ vikunja_container_labels_traefik_entrypoints: web-secure
 vikunja_container_labels_traefik_tls: "{{ vikunja_container_labels_traefik_entrypoints != 'web' }}"
 vikunja_container_labels_traefik_tls_certResolver: default  # noqa var-naming
 
+# Controls if labels are added to expose the Prometheus metrics publicly.
+vikunja_container_labels_traefik_metrics_enabled: "{{ vikunja_environment_variables_metrics_enabled }}"
+vikunja_container_labels_traefik_metrics_hostname: "{{ vikunja_hostname }}"
+# The path prefix must either be `/` or not end with a slash (e.g. `/metrics`).
+vikunja_container_labels_traefik_metrics_path_prefix: /metrics
+vikunja_container_labels_traefik_metrics_rule: "Host(`{{ vikunja_container_labels_traefik_metrics_hostname }}`){% if vikunja_container_labels_traefik_metrics_path_prefix != '/' %} && PathPrefix(`{{ vikunja_container_labels_traefik_metrics_path_prefix }}`){% endif %}"
+vikunja_container_labels_traefik_metrics_priority: 0
+vikunja_container_labels_traefik_metrics_entrypoints: "{{ vikunja_container_labels_traefik_entrypoints }}"
+vikunja_container_labels_traefik_metrics_middlewares: []
+vikunja_container_labels_traefik_metrics_tls: "{{ vikunja_container_labels_traefik_metrics_entrypoints != 'web' }}"
+vikunja_container_labels_traefik_metrics_tls_certResolver: "{{ vikunja_container_labels_traefik_tls_certResolver }}"  # noqa var-naming
+vikunja_container_labels_traefik_metrics_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+vikunja_container_labels_traefik_metrics_middleware_basic_auth_users: ""
+
 # Controls which additional headers to attach to all HTTP requests.
 # To add your own custom request headers, use `vikunja_container_labels_traefik_additional_request_headers_custom`
 vikunja_container_labels_traefik_additional_request_headers: "{{ vikunja_container_labels_traefik_additional_request_headers_auto | combine(vikunja_container_labels_traefik_additional_request_headers_custom) }}"
@@ -355,6 +370,9 @@ vikunja_environment_variables_smtp_forcessl: false
 
 # Control if the rate limit is enabled
 vikunja_environment_variables_ratelimit_enabled: false
+
+# Control if the /metrics endpoint for Prometheus is enabled
+vikunja_environment_variables_metrics_enabled: false
 
 # Additional environment variables.
 vikunja_environment_variables_additional_variables: ""
