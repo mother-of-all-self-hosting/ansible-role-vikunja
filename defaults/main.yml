@@ -371,7 +371,7 @@ vikunja_environment_variables_smtp_forcessl: false
 # Control if the rate limit is enabled
 vikunja_environment_variables_ratelimit_enabled: false
 
-# Control if the /metrics endpoint for Prometheus is enabled
+# Control if the /api/v1/metrics endpoint for Prometheus is enabled
 vikunja_environment_variables_metrics_enabled: false
 
 # Additional environment variables.
