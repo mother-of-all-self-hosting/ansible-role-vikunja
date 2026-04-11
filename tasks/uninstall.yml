@@ -83,7 +83,7 @@
   register: vikunja_data_path_stat
 
 # We just want to notify the user. Deleting data is too destructive.
-- name: Notify if Vikunja local data remains
+- name: Inject the message about the remaining Vikunja local data path
   when: vikunja_data_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
@@ -101,7 +101,7 @@
   register: vikunja_database_path_stat
 
 # We just want to notify the user. Deleting database is too destructive.
-- name: Notify if Vikunja local database remains
+- name: Inject the message about the remaining Vikunja local database path
   when: vikunja_database_path_stat.stat.exists | bool
   ansible.builtin.set_fact:
     devture_playbook_runtime_messages_list: |
