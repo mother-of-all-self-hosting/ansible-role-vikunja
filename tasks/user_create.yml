@@ -9,7 +9,10 @@
 - name: Fail if playbook called incorrectly
   ansible.builtin.fail:
     msg: "The `username`, `password`, and `email` variables need to be provided via --extra-vars"
-  when: "username is not defined or password is not defined or email is not defined"
+  when: >-
+    username is not defined or username == 'USERNAME_HERE' or
+    password is not defined or password == 'PASSWORD_HERE' or
+    email is not defined or email == 'EMAIL_ADDRESS_HERE'
 
 - name: Ensure Vikunja service is started
   ansible.builtin.service:
