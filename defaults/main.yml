@@ -284,8 +284,8 @@ vikunja_database_postgres_socket_path_container: /run-postgres
 vikunja_database_postgres_socket_path_host: ""
 
 # Specify database host address and port or absolute path for Unix socket
-vikunja_database_environment_variables_database_host_mysql: "{{ vikunja_database_mysql_socket_path_container + '/mysqld.sock' if vikunja_database_mysql_socket_enabled else vikunja_database_mysql_hostname + ':' + vikunja_database_mysql_port }}"
-vikunja_database_environment_variables_database_host_postgres: "{{ vikunja_database_postgres_socket_path_container if vikunja_database_postgres_socket_enabled else vikunja_database_postgres_hostname + ':' + vikunja_database_postgres_port }}"
+vikunja_database_environment_variables_database_host_mysql: "{{ vikunja_database_mysql_socket_path_container + '/mysqld.sock' if vikunja_database_mysql_socket_enabled else vikunja_database_mysql_hostname + ':' + vikunja_database_mysql_port | string }}"
+vikunja_database_environment_variables_database_host_postgres: "{{ vikunja_database_postgres_socket_path_container if vikunja_database_postgres_socket_enabled else vikunja_database_postgres_hostname + ':' + vikunja_database_postgres_port | string }}"
 
 ########################################################################
 #                                                                      #
