@@ -1,8 +1,8 @@
+# SPDX-FileCopyrightText: 2023, 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023, 2024 Nikita Chernyi
+# SPDX-FileCopyrightText: 2023, 2025 MASH project contributors
 # SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
-# SPDX-FileCopyrightText: 2025 MASH project contributors
 # SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
@@ -329,6 +329,21 @@ vikunja_environment_variables_redis_host: |-
 # /redis                                                               #
 #                                                                      #
 ########################################################################
+
+# vikunja_users contains a list of users that should be created automatically
+# To add your own users for specific host, use `vikunja_users_custom`
+#
+# Example:
+# vikunja_users_custom:
+#   - username: user
+#     initial_email: user@example.com
+#     initial_password: password
+#   - username: user
+#     initial_email: user@example.com
+#     initial_password: password
+vikunja_users: "{{ vikunja_users_auto + vikunja_users_custom }}"
+vikunja_users_auto: []
+vikunja_users_custom: []
 
 # Specify Typesense instance configuration
 vikunja_environment_variables_typesense_enabled: false

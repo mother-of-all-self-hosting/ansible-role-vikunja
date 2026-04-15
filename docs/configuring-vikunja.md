@@ -234,10 +234,32 @@ Alternatively, you can run the command below to create users.
 
 ### Creating users
 
-You can create users by running the command below to run [`user create`](https://vikunja.io/docs/cli/#user-create) inside the container.
+#### Creating a user manually
+
+You can create a user by running the command below:
 
 ```sh
 ansible-playbook -i inventory/hosts setup.yml --tags=create-user-vikunja -e username=USERNAME_HERE -e password=PASSWORD_HERE -e email=EMAIL_ADDRESS_HERE
+```
+
+#### Creating users automatically
+
+It is also possible to create muitiple users specified with `vikunja_users_custom` on your `vars.yml` file by running the command below:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=ensure-vikunja-users-created
+```
+
+Those users can be specified like below:
+
+```yaml
+vikunja_users_custom:
+  - username: user
+    initial_email: user@example.com
+    initial_password: password
+  - username: user
+    initial_email: user@example.com
+    initial_password: password
 ```
 
 ### Running the CLI command

@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2023 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -14,6 +14,14 @@
     password is not defined or password == 'PASSWORD_HERE' or
     email is not defined or email == 'EMAIL_ADDRESS_HERE'
 
+- name: Set user details for Vikunja
+  ansible.builtin.set_fact:
+    user:
+      username: "{{ username }}"
+      initial_email: "{{ email }}"
+      initial_password: "{{ password }}"
+  no_log: true # hide raw password
+
 - name: Ensure Vikunja service is started
   ansible.builtin.service:
     name: "{{ vikunja_identifier }}"
@@ -26,6 +34,6 @@
     seconds: 7
   when: vikunja_start.changed | bool
 
-- name: Run Vikunja 'user create' command
-  ansible.builtin.command:
-    cmd: "docker exec --user={{ vikunja_uid }}:{{ vikunja_gid }} {{ vikunja_identifier }} /app/vikunja/vikunja user create -e {{ email }} -p {{ password }} -u {{ username }}"
+- name: "Ensure Vikunja user is created - {{ user.username }}"
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/util/ensure_user_registered.yml"
+  no_log: true

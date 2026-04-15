@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2024, 2025 Nikita Chernyi
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: "Ensure Vikunja user registered - {{ user.username }}"
+  ansible.builtin.command:
+    cmd: >-
+      {{ devture_systemd_docker_base_host_command_docker }} exec
+      --user={{ vikunja_uid }}:{{ vikunja_gid }}
+      {{ vikunja_identifier }}
+      /app/vikunja/vikunja
+      user create
+      -u {{ user.username | quote }}
+      -e {{ user.initial_email | quote }}
+      -p {{ user.initial_password | quote }}
+  register: vikunja_create_account_result
+  changed_when: "'User was created successfully' in vikunja_create_account_result.stdout"
+  failed_when: "'Error creating new user' in vikunja_create_account_result.stdout"
+  no_log: true # Hide raw password
