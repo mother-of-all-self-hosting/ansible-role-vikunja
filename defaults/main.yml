@@ -305,7 +305,7 @@ vikunja_redis_port: 6379
 vikunja_redis_password: ""
 vikunja_redis_database: 0
 
-vikunja_redis_is_configured: "{{ vikunja_redis_hostname !='' or vikunja_redis_socket_path_host != '' }}"
+vikunja_redis_is_configured: "{{ vikunja_redis_hostname != '' or vikunja_redis_socket_path_host != '' }}"
 
 # Control if the connection to Redis is made via a Unix socket
 vikunja_redis_socket_enabled: true
