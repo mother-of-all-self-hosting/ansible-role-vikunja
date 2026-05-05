@@ -15,6 +15,7 @@
   with_items:
     - { "old": "vikunja_environment_variables_smtp_enabled", "new": "vikunja_mailer_enabled" }
     - { "old": "vikunja_environment_variables_service_jwtsecret", "new": "vikunja_environment_variables_service_secret" }
+    - { "old": "vikunja_container_image_force_pull", "new": "<removed> (the new community.docker.docker_image_pull module handles this natively)" }
 
 - name: Fail if required Vikunja settings not defined
   ansible.builtin.fail:

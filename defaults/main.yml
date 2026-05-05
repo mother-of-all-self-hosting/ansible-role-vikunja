@@ -41,7 +41,6 @@ vikunja_container_image_tag: "{{ vikunja_version }}"
 vikunja_container_image_registry_prefix: "{{ vikunja_container_image_registry_prefix_upstream }}"
 vikunja_container_image_registry_prefix_upstream: "{{ vikunja_container_image_registry_prefix_upstream_default }}"
 vikunja_container_image_registry_prefix_upstream_default: docker.io/
-vikunja_container_image_force_pull: "{{ vikunja_container_image.endswith(':latest') }}"
 
 vikunja_container_image_self_build: false
 vikunja_container_image_self_build_name: "go-vikunja/vikunja:{{ vikunja_container_image_self_build_repo_version }}"
