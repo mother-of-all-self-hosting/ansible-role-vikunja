@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2023 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2025 Suguru Hirahara
+# SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -25,10 +25,20 @@
 
 - name: Run Vikunja CLI command
   ansible.builtin.command:
-    cmd: "docker exec --user={{ vikunja_uid }}:{{ vikunja_gid }} {{ vikunja_identifier }} /app/vikunja/vikunja {{ command }}"
+    cmd: |-
+      {{ devture_systemd_docker_base_host_command_docker }} exec
+      --user={{ vikunja_uid }}:{{ vikunja_gid }}
+      {{ vikunja_identifier }} /app/vikunja/vikunja {{ command }}
   failed_when: false
   register: vikunja_cli_command_result
 
 - name: Display the Vikunja CLI command result
-  ansible.builtin.debug:
-    msg: "Vikunja CLI command result: {{ vikunja_cli_command_result.stdout }}"
+  ansible.builtin.set_fact:
+    devture_playbook_runtime_messages_list: |
+      {{
+        devture_playbook_runtime_messages_list | default([])
+        +
+        [
+          vikunja_cli_command_result.stdout
+        ]
+      }}
