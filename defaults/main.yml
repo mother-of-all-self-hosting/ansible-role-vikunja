@@ -92,6 +92,9 @@ vikunja_container_labels_traefik_priority: 0
 vikunja_container_labels_traefik_entrypoints: web-secure
 vikunja_container_labels_traefik_tls: "{{ vikunja_container_labels_traefik_entrypoints != 'web' }}"
 vikunja_container_labels_traefik_tls_certResolver: default  # noqa var-naming
+vikunja_container_labels_traefik_middleware_basic_auth_enabled: false
+# See: https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/basicauth/
+vikunja_container_labels_traefik_middleware_basic_auth_users: ""
 
 # Controls if labels are added to expose the Prometheus metrics publicly.
 vikunja_container_labels_traefik_metrics_enabled: "{{ vikunja_environment_variables_metrics_enabled }}"
