@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 spatterlight
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify Vikunja systemd service
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Wait for Vikunja service to become active (up to 180s)
+      ansible.builtin.systemd:
+        name: vikunja.service
+      register: vikunja_service
+      until: vikunja_service.status.ActiveState == 'active'
+      retries: 36
+      delay: 5
+
+    - name: Assert Vikunja service is active
+      ansible.builtin.assert:
+        that: vikunja_service.status.ActiveState == 'active'
+        fail_msg: "vikunja.service not active ({{ vikunja_service.status.ActiveState }})"
+        success_msg: "vikunja.service is active"
+
+    - name: Wait for Vikunja HTTP endpoint to respond (up to 10m)
+      ansible.builtin.uri:
+        url: "http://localhost:3456/"
+        method: GET
+        status_code: [200, 302]
+        follow_redirects: none
+      register: vikunja_endpoint
+      until: vikunja_endpoint.status in [200, 302]
+      retries: 120
+      delay: 5
+
+    - name: Assert Vikunja HTTP endpoint responds
+      ansible.builtin.assert:
+        that: vikunja_endpoint.status in [200, 302]
+        fail_msg: "Vikunja did not respond as expected ({{ vikunja_endpoint.status | default('no response') }})"
+        success_msg: "Vikunja responded with {{ vikunja_endpoint.status }}"
+
+    - name: Show Vikunja systemd service status summary
+      ansible.builtin.debug:
+        msg:
+          - "Vikunja systemd: {{ vikunja_service.status.ActiveState }}"
+          - "Vikunja HTTP: {{ vikunja_endpoint.status }}"
