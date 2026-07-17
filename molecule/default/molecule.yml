@@ -27,6 +27,10 @@ provisioner:
   inventory:
     group_vars:
       all:
+        # Helper variables
+        vikunja_debug_service_enabled: false
+
+        # Variables for Vikunja
         vikunja_uid: 1000
         vikunja_gid: 1000
         vikunja_hostname: vikunja

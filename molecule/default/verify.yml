@@ -23,6 +23,12 @@
         fail_msg: "vikunja.service not active ({{ vikunja_service.status.ActiveState }})"
         success_msg: "vikunja.service is active"
 
+    - name: Retrieve Vikunja service log for debugging
+      when: vikunja_debug_service_enabled | bool
+      ansible.builtin.command:
+        cmd: journalctl -xeu vikunja.service
+      changed_when: false
+
     - name: Wait for Vikunja HTTP endpoint to respond (up to 10m)
       ansible.builtin.uri:
         url: "http://localhost:3456/"
