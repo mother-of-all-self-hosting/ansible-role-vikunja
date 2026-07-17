@@ -33,7 +33,8 @@ provisioner:
         # Variables for Vikunja
         vikunja_uid: 1000
         vikunja_gid: 1000
-        vikunja_hostname: vikunja
+        vikunja_scheme: http
+        vikunja_hostname: localhost
         vikunja_container_labels_traefik_enabled: false
         vikunja_container_http_host_bind_port: 3456
         vikunja_database_type: sqlite
