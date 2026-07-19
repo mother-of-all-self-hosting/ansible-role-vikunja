@@ -49,6 +49,10 @@ Currently these testing scenarios are available:
 
 Tests a standard Vikunja installation.
 
+### `mariadb`
+
+Tests a standard Vikunja installation with the MariaDB database.
+
 ### `postgres`
 
 Tests a standard Vikunja installation with the Postgres database.
