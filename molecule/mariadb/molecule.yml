@@ -38,10 +38,10 @@ provisioner:
         vikunja_hostname: localhost
         vikunja_container_labels_traefik_enabled: false
         vikunja_container_http_host_bind_port: 3456
-        vikunja_database_type: mysql
         vikunja_environment_variables_service_secret: secret
 
         # Variables required for Vikunja to connect to the MariaDB database (via Unix socket)
+        vikunja_database_type: mysql
         vikunja_database_mysql_username: my_database_username
         vikunja_database_mysql_password: my_database_password
         vikunja_database_name: vikunja

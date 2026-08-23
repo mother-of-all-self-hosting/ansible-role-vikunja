@@ -38,8 +38,8 @@ provisioner:
         vikunja_hostname: localhost
         vikunja_container_labels_traefik_enabled: false
         vikunja_container_http_host_bind_port: 3456
-        vikunja_database_type: sqlite
         vikunja_environment_variables_service_secret: secret
+        vikunja_database_type: sqlite
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles
