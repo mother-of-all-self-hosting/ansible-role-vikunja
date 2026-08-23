@@ -17,7 +17,7 @@ vikunja_base_path: "/{{ vikunja_identifier }}"
 vikunja_data_path: "{{ vikunja_base_path }}/data"
 vikunja_database_path: "{{ vikunja_data_path }}/database"
 
-# renovate: datasource=docker depName=vikunja/vikunja
+# renovate: datasource=docker depName=vikunja/vikunja versioning=semver
 vikunja_version: 2.5.0
 
 vikunja_uid: ""
