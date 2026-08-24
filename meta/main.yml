@@ -3,7 +3,7 @@ galaxy_info:
   author: Suguru Hirahara
   company: progressiv
   role_name: vikunja
-  namespace: progressiv
+  namespace: mash
   description: Vikunja
   platforms:
     - name: Debian
