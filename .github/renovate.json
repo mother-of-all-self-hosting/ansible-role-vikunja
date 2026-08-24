@@ -1,6 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": [
+    "Patch releases are automerged here, on the strength of what the Molecule suite checks and what Vikunja's patch releases have actually contained.",
+    "Vikunja is past 1.0 and keeps to semver, and the patch releases of the 2.x line are maintenance-only: 2.2.1 and 2.2.2 (both 2026-03-23) were security releases - nine security fixes plus bugfixes, with 2.2.2 following three days later to complete one of them - and neither carried a schema migration, a breaking change or a config change. These are exactly the bumps that are worse for sitting unmerged than for landing unattended.",
+    "Unlike the lago and lldap roles in this fleet, there is no second failure mode stacked on top. `vikunja_version` names one image and one tag (`vikunja/vikunja:<version>`, no flavour suffix), so there is no possibility of Renovate proposing a version that only some of the images this role pulls have been published under.",
+    "The one thing that does argue the other way is that the container migrates its own database on startup, forward-only, and that database holds the users' projects and tasks. That is why the Molecule suite has to earn this: it runs every scenario against all three supported backends (SQLite, Postgres, MariaDB) on two distributions, and a bump only merges if, on each of them, migrations complete and the API is actually served (a Vikunja that cannot reach its database stays `active` forever without ever serving, so this is a real gate), the running build reports the pinned version from two independent leaves, the env file demonstrably reaches the process, the role's own `user create` still works against the new binary, a JWT login succeeds, and a project and task written over the API are found in the configured backend with no SQLite fallback alongside it.",
+    "Minor and major bumps still require review, which is where a migration or a behavior change would realistically arrive.",
+    "On the annotation in defaults/main.yml: `versioning=semver` is load-bearing. `vikunja/vikunja` publishes `latest` and `unstable` channel tags alongside truncated ones (`2`, `2.5`). None of those are valid semver versions, so under `semver` they drop out as candidates and only the full `X.Y.Z` tags remain - which is the intent. No `extractVersion` is needed, as the tags carry no flavour suffix."
+  ],
   "extends": [
-    "github>mother-of-all-self-hosting/renovate-config#v1.0.0"
+    "github>mother-of-all-self-hosting/renovate-config#v1.0.0",
+    "github>mother-of-all-self-hosting/renovate-config//patch-automerge#v1.0.0"
   ]
 }
