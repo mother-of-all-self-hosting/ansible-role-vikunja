@@ -47,7 +47,7 @@ Currently these testing scenarios are available:
 
 ### `default`
 
-Tests a standard Vikunja installation.
+Tests a standard Vikunja installation, backed by SQLite.
 
 ### `mariadb`
 
@@ -56,6 +56,22 @@ Tests a standard Vikunja installation with the MariaDB database.
 ### `postgres`
 
 Tests a standard Vikunja installation with the Postgres database.
+
+## What is verified
+
+Every scenario runs the same set of checks (in [`resources/tasks/verify_vikunja.yml`](./resources/tasks/verify_vikunja.yml)) and then adds whatever proves its own database backend is the one carrying the data.
+
+The shared checks are built around one observation: a Vikunja that cannot reach its database parks itself in `Running migrations…` and stays there. The container keeps running, so systemd keeps reporting the service `active`, and yet nothing is ever served. A service being `active` therefore proves very little here, and the checks are chosen so that they cannot pass against such an instance:
+
+- the API answers on `/api/v1/info`, which Vikunja only serves once it has connected to its database and migrated it
+- the running build reports the version [`defaults/main.yml`](../defaults/main.yml) pins, asked both over HTTP and of the binary itself
+- values the role writes into the env file are read back out of the running process — the public URL, the registration setting, and a MOTD that can only arrive through `vikunja_environment_variables_additional_variables`
+- self-registration is refused, as the role configures
+- the API refuses unauthenticated callers
+- the role's own `user create` task file creates a user, who then logs in and receives a JWT
+- a project and a task are created over the API and read back
+
+Each scenario then queries its own backend directly for the task and the user, and the `mariadb` and `postgres` scenarios additionally assert that no SQLite database was written alongside — a fallback would otherwise leave every check above green.
 
 ## Running
 

@@ -1,0 +1,334 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# The checks that every scenario runs, whichever database backend Vikunja was
+# pointed at. Scenarios include this file from their own verify.yml and then
+# add whatever proves their particular backend is the one carrying the data.
+#
+# The negative control this file is built around, established by running the
+# image by hand: a Vikunja that cannot reach its database parks itself in
+# "Running migrations…" and stays there indefinitely. The container keeps
+# running, so systemd keeps reporting the service `active`, and yet nothing is
+# ever served on the HTTP port - not even the info endpoint. `active` is
+# therefore worth close to nothing here, and every check below is what
+# separates a working instance from that one.
+#
+# Vikunja also refuses to start at all unless `service.publicurl` is set, so
+# the role's env file has to reach the process before anything can pass.
+
+- name: Load the role's defaults, for the literals the role ships with
+  # Only values that are plain literals in defaults/main.yml may be read from
+  # here - anything containing Jinja would be evaluated in this playbook's
+  # scope, where the role's other variables do not exist. Everything the
+  # scenario itself decides comes from group_vars in molecule.yml instead.
+  ansible.builtin.include_vars:
+    file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+    name: vikunja_role_defaults
+
+- name: Note where the Vikunja API is reachable
+  ansible.builtin.set_fact:
+    vikunja_molecule_api_url: "http://127.0.0.1:{{ vikunja_container_http_host_bind_port }}/api/v1"
+
+- name: Wait for the Vikunja systemd service to become active (up to 3m)
+  ansible.builtin.systemd_service:
+    name: vikunja.service
+  register: vikunja_service
+  until: vikunja_service.status.ActiveState == 'active'
+  retries: 36
+  delay: 5
+
+- name: Assert that the Vikunja systemd service is active
+  ansible.builtin.assert:
+    that: vikunja_service.status.ActiveState == 'active'
+    fail_msg: "vikunja.service is {{ vikunja_service.status.ActiveState }}, not active"
+    success_msg: "vikunja.service is active (which on its own proves little - see below)"
+
+- name: Retrieve the Vikunja service log for debugging
+  when: vikunja_debug_service_enabled | bool
+  ansible.builtin.command:
+    cmd: journalctl -xeu vikunja.service
+  changed_when: false
+
+########################################################################
+#                                                                      #
+# The API is actually served                                           #
+#                                                                      #
+########################################################################
+
+# This is the check that the `active` assertion above cannot make. Vikunja
+# only binds its HTTP port after it has connected to the database and run its
+# migrations, so an answer here means the backend this scenario configured is
+# genuinely reachable and usable - which is exactly what the negative control
+# never manages.
+- name: Wait for the Vikunja API to answer on its info endpoint (up to 10m)
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/info"
+    method: GET
+    status_code: [200]
+  register: vikunja_info
+  until: vikunja_info.status == 200
+  retries: 120
+  delay: 5
+
+########################################################################
+#                                                                      #
+# Version                                                              #
+#                                                                      #
+########################################################################
+
+# Asserted against the literal in defaults/main.yml, so that a bump resolving
+# to an image which does not contain the version it claims to - a mistyped
+# tag, a stale local image, a registry serving something else under that name
+# - fails here instead of shipping. The info endpoint reports what the running
+# build has compiled in, not the tag it was pulled under.
+- name: Assert that the API reports the version defaults/main.yml asks for
+  ansible.builtin.assert:
+    that: >-
+      vikunja_info.json.version is match('v' ~
+      (vikunja_role_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
+    fail_msg: >-
+      The API reports version `{{ vikunja_info.json.version }}`, which is not the
+      `{{ vikunja_role_defaults.vikunja_version }}` that defaults/main.yml asks for
+    success_msg: "The API reports Vikunja {{ vikunja_role_defaults.vikunja_version }}, as defaults/main.yml asks for"
+
+# A second, independent leaf: the binary asked directly, rather than an HTTP
+# handler that could in principle be serving a value from somewhere else.
+- name: Ask the Vikunja binary itself which version it is
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "--user={{ vikunja_uid }}:{{ vikunja_gid }}"
+      - "{{ vikunja_role_defaults.vikunja_identifier }}"
+      - /app/vikunja/vikunja
+      - version
+  register: vikunja_reported_version
+  changed_when: false
+
+- name: Assert that the binary reports the version defaults/main.yml asks for
+  ansible.builtin.assert:
+    that: >-
+      vikunja_reported_version.stdout is search('version v' ~
+      (vikunja_role_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
+    fail_msg: >-
+      The binary reports `{{ vikunja_reported_version.stdout }}`, which is not the
+      `{{ vikunja_role_defaults.vikunja_version }}` that defaults/main.yml asks for
+    success_msg: "The binary reports Vikunja {{ vikunja_role_defaults.vikunja_version }}, as defaults/main.yml asks for"
+
+########################################################################
+#                                                                      #
+# The role's configuration reaches the running process                 #
+#                                                                      #
+########################################################################
+
+# The role builds `vikunja_environment_variables_service_publicurl` out of the
+# scheme and hostname and writes it into the env file. Vikunja echoes what it
+# actually parsed back as `frontend_url`, so this is the env file being read
+# back out of the running process rather than off the disk.
+- name: Assert that the public URL the role configured reached the process
+  ansible.builtin.assert:
+    that: vikunja_info.json.frontend_url is match((vikunja_scheme ~ '://' ~ vikunja_hostname) | regex_escape ~ '/?$')
+    fail_msg: >-
+      Vikunja reports its public URL as `{{ vikunja_info.json.frontend_url }}`,
+      not the `{{ vikunja_scheme }}://{{ vikunja_hostname }}` the role configured
+    success_msg: "Vikunja reports the public URL the role configured (`{{ vikunja_info.json.frontend_url }}`)"
+
+# `vikunja_environment_variables_additional_variables` is the role's escape
+# hatch for settings that have no dedicated variable. Nothing else exercises
+# it, and a value that only reaches Vikunja through it - here a MOTD unique to
+# this scenario - is the cleanest proof that the passthrough works and that
+# this instance is the one this scenario configured.
+- name: Assert that the scenario's MOTD reached the process through the additional-variables passthrough
+  ansible.builtin.assert:
+    that: vikunja_info.json.motd == vikunja_molecule_motd
+    fail_msg: >-
+      Vikunja reports its MOTD as `{{ vikunja_info.json.motd }}`,
+      not the `{{ vikunja_molecule_motd }}` written through
+      `vikunja_environment_variables_additional_variables`
+    success_msg: "The MOTD passed through `vikunja_environment_variables_additional_variables` reached the process"
+
+########################################################################
+#                                                                      #
+# Registration is disabled, as the role configures it                  #
+#                                                                      #
+########################################################################
+
+# The role ships `vikunja_environment_variables_service_enableregistration`
+# off by default, and Vikunja reports what it parsed. Compared against the
+# role's own literal so that flipping the default has to flip this too.
+- name: Assert that the API reports registration as the role configures it
+  ansible.builtin.assert:
+    that: >-
+      vikunja_info.json.auth.local.registration_enabled
+      == (vikunja_role_defaults.vikunja_environment_variables_service_enableregistration | bool)
+    fail_msg: >-
+      Vikunja reports registration_enabled={{ vikunja_info.json.auth.local.registration_enabled }},
+      but the role configures
+      {{ vikunja_role_defaults.vikunja_environment_variables_service_enableregistration }}
+    success_msg: "Vikunja reports registration as the role configures it (disabled)"
+
+# The behavioural counterpart of the assertion above: with registration off,
+# Vikunja does not register the route at all, so the endpoint 404s.
+#
+# A 404 on its own would be weak evidence - a typo in the path 404s too - so
+# this was checked the other way round by hand before being relied on here:
+# with `VIKUNJA_SERVICE_ENABLEREGISTRATION=true` the very same request returns
+# 200 and creates the account. The 404 is the configuration taking effect.
+- name: Attempt to register a user over the API, which the role's configuration forbids
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/register"
+    method: POST
+    status_code: [200, 404, 412]
+    body_format: json
+    body:
+      username: "{{ vikunja_molecule_probe_username }}-unwanted"
+      email: "unwanted-{{ vikunja_molecule_probe_email }}"
+      password: "{{ vikunja_molecule_probe_password }}"
+  register: vikunja_registration_attempt
+  when: not (vikunja_role_defaults.vikunja_environment_variables_service_enableregistration | bool)
+
+- name: Assert that self-registration is refused
+  ansible.builtin.assert:
+    that: vikunja_registration_attempt.status == 404
+    fail_msg: >-
+      Registering a user was answered with {{ vikunja_registration_attempt.status }},
+      so self-registration is reachable despite the role disabling it
+    success_msg: "Self-registration is not reachable, as the role configures"
+  when: not (vikunja_role_defaults.vikunja_environment_variables_service_enableregistration | bool)
+
+########################################################################
+#                                                                      #
+# A user can be created, and only through the role's own mechanism     #
+#                                                                      #
+########################################################################
+
+# The API refusing an anonymous caller is what makes the authenticated calls
+# further down mean something. Without this, a Vikunja that served everything
+# to everyone would pass every remaining check.
+- name: Read the current user without a token (negative control)
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/user"
+    method: GET
+    status_code: [401]
+  register: vikunja_unauthenticated_call
+
+- name: Assert that the API refuses unauthenticated callers
+  ansible.builtin.assert:
+    that: vikunja_unauthenticated_call.status == 401
+    fail_msg: "An unauthenticated API call was answered with {{ vikunja_unauthenticated_call.status }}, not 401"
+    success_msg: "The API refuses unauthenticated callers with 401"
+
+# Registration is off and this user does not exist yet, so the only way in is
+# the mechanism the role itself offers. Running the role's own task file -
+# rather than a hand-rolled `docker exec` that happens to resemble it - is
+# what puts the role's `user create` invocation under test.
+#
+# The role reaches Docker through a variable owned by the systemd_docker_base
+# role, whose defaults are not in scope in a verification playbook; it is
+# passed in here with the value that role defaults to.
+- name: Create the probe user through the role's own user-creation task file
+  ansible.builtin.include_tasks:
+    file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/tasks/util/ensure_user_registered.yml"
+  vars:
+    devture_systemd_docker_base_host_command_docker: /usr/bin/env docker
+    vikunja_identifier: "{{ vikunja_role_defaults.vikunja_identifier }}"
+    user:
+      username: "{{ vikunja_molecule_probe_username }}"
+      initial_email: "{{ vikunja_molecule_probe_email }}"
+      initial_password: "{{ vikunja_molecule_probe_password }}"
+
+- name: Log in as the user the role just created
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/login"
+    method: POST
+    status_code: [200]
+    body_format: json
+    body:
+      username: "{{ vikunja_molecule_probe_username }}"
+      password: "{{ vikunja_molecule_probe_password }}"
+  register: vikunja_login
+
+- name: Assert that logging in yields a JWT
+  ansible.builtin.assert:
+    that:
+      - vikunja_login.json.token | default('') | length > 0
+      - vikunja_login.json.token.split('.') | length == 3
+    fail_msg: "Logging in as `{{ vikunja_molecule_probe_username }}` did not return a JWT"
+    success_msg: "The user created through the role logs in and receives a JWT"
+
+- name: Note the authorization header for the rest of the checks
+  ansible.builtin.set_fact:
+    vikunja_molecule_auth_headers:
+      Authorization: "Bearer {{ vikunja_login.json.token }}"
+
+- name: Read back the account the role created
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/user"
+    method: GET
+    status_code: [200]
+    headers: "{{ vikunja_molecule_auth_headers }}"
+  register: vikunja_current_user
+
+- name: Assert that the token identifies the user the role created
+  ansible.builtin.assert:
+    that: vikunja_current_user.json.username == vikunja_molecule_probe_username
+    fail_msg: >-
+      The token identifies `{{ vikunja_current_user.json.username }}`,
+      not `{{ vikunja_molecule_probe_username }}`
+    success_msg: "The token identifies `{{ vikunja_molecule_probe_username }}`"
+
+########################################################################
+#                                                                      #
+# A task survives a write and a read                                   #
+#                                                                      #
+########################################################################
+
+# Vikunja is a todo application, so the thing worth proving is that a project
+# and a task can be created and read back. This also puts writes through the
+# database the scenario configured, which is what the per-scenario checks then
+# go looking for on the other side.
+- name: Create a project
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/projects"
+    method: PUT
+    status_code: [201]
+    headers: "{{ vikunja_molecule_auth_headers }}"
+    body_format: json
+    body:
+      title: "{{ vikunja_molecule_project_title }}"
+  register: vikunja_created_project
+
+- name: Create a task in that project
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/projects/{{ vikunja_created_project.json.id }}/tasks"
+    method: PUT
+    status_code: [201]
+    headers: "{{ vikunja_molecule_auth_headers }}"
+    body_format: json
+    body:
+      title: "{{ vikunja_molecule_task_title }}"
+      description: "{{ vikunja_molecule_task_description }}"
+  register: vikunja_created_task
+
+- name: Read the task back through a separate request
+  ansible.builtin.uri:
+    url: "{{ vikunja_molecule_api_url }}/tasks/{{ vikunja_created_task.json.id }}"
+    method: GET
+    status_code: [200]
+    headers: "{{ vikunja_molecule_auth_headers }}"
+  register: vikunja_read_task
+
+- name: Assert that the task read back is the one that was written
+  ansible.builtin.assert:
+    that:
+      - vikunja_read_task.json.title == vikunja_molecule_task_title
+      - vikunja_read_task.json.description is search(vikunja_molecule_task_description | regex_escape)
+      - vikunja_read_task.json.project_id == vikunja_created_project.json.id
+    fail_msg: >-
+      Reading task {{ vikunja_created_task.json.id }} back returned
+      `{{ vikunja_read_task.json.title }}` in project
+      {{ vikunja_read_task.json.project_id }}, not `{{ vikunja_molecule_task_title }}`
+      in project {{ vikunja_created_project.json.id }}
+    success_msg: "A task written through the API reads back intact, so Vikunja is storing work"

@@ -1,53 +1,69 @@
 # SPDX-FileCopyrightText: 2026 spatterlight
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Verify Vikunja systemd service
+- name: Verify Vikunja
   hosts: all
   become: true
   gather_facts: false
   tasks:
-    - name: Wait for Vikunja service to become active (up to 180s)
-      ansible.builtin.systemd:
-        name: vikunja.service
-      register: vikunja_service
-      until: vikunja_service.status.ActiveState == 'active'
-      retries: 36
-      delay: 5
+    - name: Run the checks shared by all Vikunja scenarios
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/resources/tasks/verify_vikunja.yml"
 
-    - name: Assert Vikunja service is active
-      ansible.builtin.assert:
-        that: vikunja_service.status.ActiveState == 'active'
-        fail_msg: "vikunja.service not active ({{ vikunja_service.status.ActiveState }})"
-        success_msg: "vikunja.service is active"
-
-    - name: Retrieve Vikunja service log for debugging
-      when: vikunja_debug_service_enabled | bool
+    # This scenario sets `vikunja_database_type` to `sqlite`, so the store has
+    # to be the file the role bind-mounts into the container. Reading the task
+    # straight out of that file - rather than trusting the
+    # `VIKUNJA_DATABASE_TYPE` the role wrote into the env file - is what proves
+    # SQLite is the backend actually carrying the data.
+    - name: Read the tasks Vikunja stored, out of its SQLite database
       ansible.builtin.command:
-        cmd: journalctl -xeu vikunja.service
+        argv:
+          - python3
+          - "-c"
+          - |
+            import sqlite3
+            import sys
+
+            connection = sqlite3.connect('file:%s?mode=ro' % sys.argv[1], uri=True)
+            print(','.join(row[0] for row in connection.execute('SELECT title FROM tasks ORDER BY id')))
+          - "{{ vikunja_molecule_sqlite_path }}"
+      register: vikunja_sqlite_tasks
       changed_when: false
 
-    - name: Wait for Vikunja HTTP endpoint to respond (up to 10m)
-      ansible.builtin.uri:
-        url: "http://localhost:3456/"
-        method: GET
-        status_code: [200, 302]
-        follow_redirects: none
-      register: vikunja_endpoint
-      until: vikunja_endpoint.status in [200, 302]
-      retries: 120
-      delay: 5
-
-    - name: Assert Vikunja HTTP endpoint responds
+    - name: Assert that the SQLite database holds the task created over the API
       ansible.builtin.assert:
-        that: vikunja_endpoint.status in [200, 302]
-        fail_msg: "Vikunja did not respond as expected ({{ vikunja_endpoint.status | default('no response') }})"
-        success_msg: "Vikunja responded with {{ vikunja_endpoint.status }}"
+        that: vikunja_sqlite_tasks.stdout.split(',') == [vikunja_molecule_task_title]
+        fail_msg: >-
+          `{{ vikunja_molecule_sqlite_path }}` holds `{{ vikunja_sqlite_tasks.stdout }}`,
+          not the `{{ vikunja_molecule_task_title }}` that was created over the API
+        success_msg: "The SQLite database at `{{ vikunja_molecule_sqlite_path }}` holds the task created over the API"
 
-    - name: Show Vikunja systemd service status summary
-      ansible.builtin.debug:
-        msg:
-          - "Vikunja systemd: {{ vikunja_service.status.ActiveState }}"
-          - "Vikunja HTTP: {{ vikunja_endpoint.status }}"
+    # The user was created by the role's own `user create` invocation, which
+    # goes through the CLI rather than the API. Finding it in the same file
+    # proves both paths write to the one store this scenario configured.
+    - name: Read the users Vikunja stored, out of its SQLite database
+      ansible.builtin.command:
+        argv:
+          - python3
+          - "-c"
+          - |
+            import sqlite3
+            import sys
+
+            connection = sqlite3.connect('file:%s?mode=ro' % sys.argv[1], uri=True)
+            print(','.join(row[0] for row in connection.execute('SELECT username FROM users ORDER BY id')))
+          - "{{ vikunja_molecule_sqlite_path }}"
+      register: vikunja_sqlite_users
+      changed_when: false
+
+    - name: Assert that the SQLite database holds the user the role created
+      ansible.builtin.assert:
+        that: vikunja_sqlite_users.stdout.split(',') == [vikunja_molecule_probe_username]
+        fail_msg: >-
+          `{{ vikunja_molecule_sqlite_path }}` holds users `{{ vikunja_sqlite_users.stdout }}`,
+          not the `{{ vikunja_molecule_probe_username }}` the role created
+        success_msg: "The SQLite database holds `{{ vikunja_molecule_probe_username }}`, created through the role"

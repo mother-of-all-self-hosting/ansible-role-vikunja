@@ -30,6 +30,24 @@ provisioner:
       all:
         # Helper variables
         vikunja_debug_service_enabled: false
+        # The user that verify.yml creates through the role's own
+        # `user create` task file and then logs in as over the API.
+        # Registration is disabled, so that is the only way in.
+        vikunja_molecule_probe_username: molecule-probe
+        vikunja_molecule_probe_email: molecule-probe@example.com
+        vikunja_molecule_probe_password: molecule-probe-password
+        # The project and task that verify.yml round-trips through the API and
+        # then goes looking for in the database this scenario configured.
+        vikunja_molecule_project_title: molecule-probe-project
+        vikunja_molecule_task_title: molecule-probe-task
+        vikunja_molecule_task_description: molecule-round-trip-marker
+        # A value that can reach Vikunja only through
+        # `vikunja_environment_variables_additional_variables`, and which
+        # differs per scenario so a container left over from another one
+        # cannot pass for this scenario's.
+        vikunja_molecule_motd: molecule-motd-default
+        # Where this scenario's SQLite database lands.
+        vikunja_molecule_sqlite_path: /vikunja/data/database/vikunja.db
 
         # Variables for Vikunja
         vikunja_uid: 1000
@@ -40,6 +58,10 @@ provisioner:
         vikunja_container_http_host_bind_port: 3456
         vikunja_environment_variables_service_secret: secret
         vikunja_database_type: sqlite
+        # Exercises the role's escape hatch for settings without a dedicated
+        # variable; verify.yml asserts the MOTD reached the running process.
+        vikunja_environment_variables_additional_variables: |
+          VIKUNJA_SERVICE_MOTD={{ vikunja_molecule_motd }}
   env:
     # Workaround for https://github.com/ansible/molecule/issues/4391
     ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles

@@ -1,53 +1,89 @@
 # SPDX-FileCopyrightText: 2026 spatterlight
 # SPDX-FileCopyrightText: 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-- name: Verify Vikunja systemd service
+- name: Verify Vikunja
   hosts: all
   become: true
   gather_facts: false
   tasks:
-    - name: Wait for Vikunja service to become active (up to 180s)
-      ansible.builtin.systemd:
-        name: vikunja.service
-      register: vikunja_service
-      until: vikunja_service.status.ActiveState == 'active'
-      retries: 36
-      delay: 5
+    - name: Run the checks shared by all Vikunja scenarios
+      ansible.builtin.include_tasks:
+        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/resources/tasks/verify_vikunja.yml"
 
-    - name: Assert Vikunja service is active
-      ansible.builtin.assert:
-        that: vikunja_service.status.ActiveState == 'active'
-        fail_msg: "vikunja.service not active ({{ vikunja_service.status.ActiveState }})"
-        success_msg: "vikunja.service is active"
-
-    - name: Retrieve Vikunja service log for debugging
-      when: vikunja_debug_service_enabled | bool
+    # Pointing `vikunja_database_type` at `postgres` is only worth testing if
+    # it actually moves the data. Asking Postgres itself for the task that was
+    # created over the API is what settles that; a `VIKUNJA_DATABASE_TYPE` in
+    # the env file would look just as convincing while Vikunja quietly kept
+    # its own SQLite file.
+    #
+    # The query goes in as the role's own database user, over the Unix socket
+    # the role mounts, so the credentials the role configured are under test
+    # here too.
+    - name: Read the tasks Vikunja stored, out of the Postgres database
       ansible.builtin.command:
-        cmd: journalctl -xeu vikunja.service
+        argv:
+          - docker
+          - exec
+          - "--env=PGPASSWORD={{ vikunja_database_postgres_password }}"
+          - "{{ postgres_identifier | default('postgres') }}"
+          - psql
+          - "--username={{ vikunja_database_postgres_username }}"
+          - "--dbname={{ vikunja_database_name }}"
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT title FROM tasks ORDER BY id"
+      register: vikunja_postgres_tasks
       changed_when: false
 
-    - name: Wait for Vikunja HTTP endpoint to respond (up to 10m)
-      ansible.builtin.uri:
-        url: "http://localhost:3456/"
-        method: GET
-        status_code: [200, 302]
-        follow_redirects: none
-      register: vikunja_endpoint
-      until: vikunja_endpoint.status in [200, 302]
-      retries: 120
-      delay: 5
-
-    - name: Assert Vikunja HTTP endpoint responds
+    - name: Assert that the Postgres database holds the task created over the API
       ansible.builtin.assert:
-        that: vikunja_endpoint.status in [200, 302]
-        fail_msg: "Vikunja did not respond as expected ({{ vikunja_endpoint.status | default('no response') }})"
-        success_msg: "Vikunja responded with {{ vikunja_endpoint.status }}"
+        that: vikunja_postgres_tasks.stdout_lines == [vikunja_molecule_task_title]
+        fail_msg: >-
+          The `{{ vikunja_database_name }}` database holds {{ vikunja_postgres_tasks.stdout_lines }},
+          not the `{{ vikunja_molecule_task_title }}` that was created over the API
+        success_msg: "The `{{ vikunja_database_name }}` Postgres database holds the task created over the API"
 
-    - name: Show Vikunja systemd service status summary
-      ansible.builtin.debug:
-        msg:
-          - "Vikunja systemd: {{ vikunja_service.status.ActiveState }}"
-          - "Vikunja HTTP: {{ vikunja_endpoint.status }}"
+    # The user was created by the role's own `user create` invocation, which
+    # goes through the CLI rather than the API. Finding it in the same
+    # database proves both paths write to the backend this scenario configured.
+    - name: Read the users Vikunja stored, out of the Postgres database
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - "--env=PGPASSWORD={{ vikunja_database_postgres_password }}"
+          - "{{ postgres_identifier | default('postgres') }}"
+          - psql
+          - "--username={{ vikunja_database_postgres_username }}"
+          - "--dbname={{ vikunja_database_name }}"
+          - --tuples-only
+          - --no-align
+          - "--command=SELECT username FROM users ORDER BY id"
+      register: vikunja_postgres_users
+      changed_when: false
+
+    - name: Assert that the Postgres database holds the user the role created
+      ansible.builtin.assert:
+        that: vikunja_postgres_users.stdout_lines == [vikunja_molecule_probe_username]
+        fail_msg: >-
+          The `{{ vikunja_database_name }}` database holds users {{ vikunja_postgres_users.stdout_lines }},
+          not the `{{ vikunja_molecule_probe_username }}` the role created
+        success_msg: "The Postgres database holds `{{ vikunja_molecule_probe_username }}`, created through the role"
+
+    - name: Check whether Vikunja also wrote a SQLite database
+      ansible.builtin.stat:
+        path: "{{ vikunja_molecule_sqlite_path }}"
+      register: vikunja_sqlite_file
+
+    # The counterpart of the checks above: Vikunja falling back to SQLite
+    # while Postgres happened to be reachable would leave both stores
+    # populated and the assertions above still green.
+    - name: Assert that Vikunja did not fall back to SQLite
+      ansible.builtin.assert:
+        that: not vikunja_sqlite_file.stat.exists
+        fail_msg: "Vikunja wrote a SQLite database at `{{ vikunja_molecule_sqlite_path }}` despite being pointed at Postgres"
+        success_msg: "Vikunja wrote no SQLite database, so Postgres is its only store"
