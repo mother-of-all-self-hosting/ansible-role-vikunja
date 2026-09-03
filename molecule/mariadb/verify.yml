@@ -14,11 +14,8 @@
       ansible.builtin.include_tasks:
         file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
-    # Pointing `vikunja_database_type` at `mysql` is only worth testing if it
-    # actually moves the data. Asking MariaDB itself for the task that was
-    # created over the API is what settles that; a `VIKUNJA_DATABASE_TYPE` in
-    # the env file would look just as convincing while Vikunja quietly kept
-    # its own SQLite file.
+    # Verify Vikunja stores data on the database actually by asking MariaDB for the task that was
+    # created over the API.
     #
     # The query goes in as the role's own database user, over the Unix socket
     # the role mounts, so the credentials the role configured are under test

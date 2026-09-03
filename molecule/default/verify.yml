@@ -14,11 +14,7 @@
       ansible.builtin.include_tasks:
         file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
-    # This scenario sets `vikunja_database_type` to `sqlite`, so the store has
-    # to be the file the role bind-mounts into the container. Reading the task
-    # straight out of that file - rather than trusting the
-    # `VIKUNJA_DATABASE_TYPE` the role wrote into the env file - is what proves
-    # SQLite is the backend actually carrying the data.
+    # Verify Vikunja stores data on the database actually by reading the task straight out of that file.
     - name: Read the tasks Vikunja stored, out of its SQLite database
       ansible.builtin.command:
         argv:
