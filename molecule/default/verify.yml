@@ -12,7 +12,7 @@
   tasks:
     - name: Run the checks shared by all Vikunja scenarios
       ansible.builtin.include_tasks:
-        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/resources/tasks/verify_vikunja.yml"
+        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
     # This scenario sets `vikunja_database_type` to `sqlite`, so the store has
     # to be the file the role bind-mounts into the container. Reading the task
