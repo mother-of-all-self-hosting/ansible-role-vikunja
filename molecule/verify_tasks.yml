@@ -82,15 +82,13 @@
 # tag, a stale local image, a registry serving something else under that name
 # - fails here instead of shipping. The info endpoint reports what the running
 # build has compiled in, not the tag it was pulled under.
-- name: Assert that the API reports the version defaults/main.yml asks for
+- name: Assert the running Vikunja API is the version this role installs
   ansible.builtin.assert:
     that: >-
       vikunja_info.json.version is match('v' ~
-      (vikunja_role_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
-    fail_msg: >-
-      The API reports version `{{ vikunja_info.json.version }}`, which is not the
-      `{{ vikunja_role_defaults.vikunja_version }}` that defaults/main.yml asks for
-    success_msg: "The API reports Vikunja {{ vikunja_role_defaults.vikunja_version }}, as defaults/main.yml asks for"
+      (vikunja_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
+    fail_msg: "Vikunja API reports {{ vikunja_info.json.version | default('none') }}, expected {{ vikunja_defaults.vikunja_version }}"
+    success_msg: "Vikunja API reports {{ vikunja_info.json.version }}"
 
 # A second, independent leaf: the binary asked directly, rather than an HTTP
 # handler that could in principle be serving a value from somewhere else.
@@ -106,15 +104,13 @@
   register: vikunja_reported_version
   changed_when: false
 
-- name: Assert that the binary reports the version defaults/main.yml asks for
+- name: Assert the running Vikunja is the version this role installs
   ansible.builtin.assert:
     that: >-
       vikunja_reported_version.stdout is search('version v' ~
-      (vikunja_role_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
-    fail_msg: >-
-      The binary reports `{{ vikunja_reported_version.stdout }}`, which is not the
-      `{{ vikunja_role_defaults.vikunja_version }}` that defaults/main.yml asks for
-    success_msg: "The binary reports Vikunja {{ vikunja_role_defaults.vikunja_version }}, as defaults/main.yml asks for"
+      (vikunja_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
+    fail_msg: "Vikunja reports {{ vikunja_reported_version.stdout | default('none') }}, expected {{ vikunja_defaults.vikunja_version }}"
+    success_msg: "Vikunja reports {{ vikunja_reported_version.stdout }}"
 
 ########################################################################
 #                                                                      #
