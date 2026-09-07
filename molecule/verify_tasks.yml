@@ -92,7 +92,7 @@
 
 # A second, independent leaf: the binary asked directly, rather than an HTTP
 # handler that could in principle be serving a value from somewhere else.
-- name: Ask the Vikunja binary itself which version it is
+- name: Query the version of the running Vikunja
   ansible.builtin.command:
     argv:
       - docker
