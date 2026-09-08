@@ -53,7 +53,7 @@
 - name: Retrieve the Vikunja systemd service log for debugging
   when: vikunja_debug_service_enabled | bool
   ansible.builtin.command:
-    cmd: journalctl -xeu vikunja.service
+    cmd: journalctl --no-pager --output=cat --unit=vikunja.service
   changed_when: false
 
 ########################################################################
