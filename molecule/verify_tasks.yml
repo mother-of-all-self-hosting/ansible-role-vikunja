@@ -30,7 +30,7 @@
   ansible.builtin.set_fact:
     vikunja_molecule_api_url: "http://127.0.0.1:{{ vikunja_container_http_host_bind_port }}/api/v1"
 
-- name: Wait for the Vikunja systemd service to become active (up to 3m)
+- name: Wait for the Vikunja systemd service to become active (up to 180s)
   ansible.builtin.systemd_service:
     name: vikunja.service
   register: vikunja_service
