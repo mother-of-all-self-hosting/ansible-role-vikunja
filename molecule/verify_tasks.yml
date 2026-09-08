@@ -107,16 +107,16 @@
       - "{{ vikunja_defaults.vikunja_identifier }}"
       - /app/vikunja/vikunja
       - version
-  register: vikunja_reported_version
+  register: vikunja_version_reported
   changed_when: false
 
 - name: Assert the running Vikunja is the version this role installs
   ansible.builtin.assert:
     that: >-
-      vikunja_reported_version.stdout is search('version v' ~
+      vikunja_version_reported.stdout is search('version v' ~
       (vikunja_defaults.vikunja_version | regex_replace('^v', '') | regex_escape) ~ '($|[^0-9.])')
-    fail_msg: "Vikunja reports {{ vikunja_reported_version.stdout | default('none') }}, expected {{ vikunja_defaults.vikunja_version }}"
-    success_msg: "Vikunja reports {{ vikunja_reported_version.stdout }}"
+    fail_msg: "Vikunja reports {{ vikunja_version_reported.stdout | default('none') }}, expected {{ vikunja_defaults.vikunja_version }}"
+    success_msg: "Vikunja reports {{ vikunja_version_reported.stdout }}"
 
 ########################################################################
 #                                                                      #
