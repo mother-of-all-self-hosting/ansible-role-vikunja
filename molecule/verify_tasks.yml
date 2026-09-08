@@ -100,13 +100,11 @@
 # handler that could in principle be serving a value from somewhere else.
 - name: Query the version of the running Vikunja
   ansible.builtin.command:
-    argv:
-      - docker
-      - exec
-      - "--user={{ vikunja_uid }}:{{ vikunja_gid }}"
-      - "{{ vikunja_defaults.vikunja_identifier }}"
-      - /app/vikunja/vikunja
-      - version
+    cmd: >-
+      docker exec
+      --user={{ vikunja_uid }}:{{ vikunja_gid }}
+      {{ vikunja_defaults.vikunja_identifier }}
+      /app/vikunja/vikunja version
   register: vikunja_version_reported
   changed_when: false
 
