@@ -10,6 +10,8 @@
   become: true
   gather_facts: false
   tasks:
+    - name: Verify that Vikunja works
+      block:
     - name: Run the checks shared by all Vikunja scenarios
       ansible.builtin.include_tasks:
         file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
@@ -63,3 +65,19 @@
           `{{ vikunja_molecule_sqlite_path }}` holds users `{{ vikunja_sqlite_users.stdout }}`,
           not the `{{ vikunja_molecule_probe_username }}` the role created
         success_msg: "The SQLite database holds `{{ vikunja_molecule_probe_username }}`, created through the role"
+
+      rescue:
+        # Whatever went wrong, the reason is almost always in the systemd service log.
+        - name: Retrieve the Vikunja systemd service log
+          ansible.builtin.command:
+            cmd: journalctl --no-pager --output=cat --unit=vikunja.service
+          register: vikunja_service_log
+          changed_when: false
+
+        - name: Show the Vikunja systemd service log
+          ansible.builtin.debug:
+            var: vikunja_service_log.stdout_lines
+
+        - name: Fail because verification did not pass
+          ansible.builtin.fail:
+            msg: "Vikunja verification failed. The systemd service log is printed above."
