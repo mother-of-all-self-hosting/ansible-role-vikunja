@@ -12,59 +12,59 @@
   tasks:
     - name: Verify that Vikunja works
       block:
-    - name: Run the checks shared by all Vikunja scenarios
-      ansible.builtin.include_tasks:
-        file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
+        - name: Run the checks shared by all Vikunja scenarios
+          ansible.builtin.include_tasks:
+            file: "{{ lookup('ansible.builtin.env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/verify_tasks.yml"
 
-    # Verify Vikunja stores data on the database actually by reading the task straight out of that file.
-    - name: Read the tasks Vikunja stored, out of its SQLite database
-      ansible.builtin.command:
-        argv:
-          - python3
-          - "-c"
-          - |
-            import sqlite3
-            import sys
+        # Verify Vikunja stores data on the database actually by reading the task straight out of that file.
+        - name: Read the tasks Vikunja stored, out of its SQLite database
+          ansible.builtin.command:
+            argv:
+              - python3
+              - "-c"
+              - |
+                import sqlite3
+                import sys
 
-            connection = sqlite3.connect('file:%s?mode=ro' % sys.argv[1], uri=True)
-            print(','.join(row[0] for row in connection.execute('SELECT title FROM tasks ORDER BY id')))
-          - "{{ vikunja_molecule_sqlite_path }}"
-      register: vikunja_sqlite_tasks
-      changed_when: false
+                connection = sqlite3.connect('file:%s?mode=ro' % sys.argv[1], uri=True)
+                print(','.join(row[0] for row in connection.execute('SELECT title FROM tasks ORDER BY id')))
+              - "{{ vikunja_molecule_sqlite_path }}"
+          register: vikunja_sqlite_tasks
+          changed_when: false
 
-    - name: Assert that the SQLite database holds the task created over the API
-      ansible.builtin.assert:
-        that: vikunja_sqlite_tasks.stdout.split(',') == [vikunja_molecule_task_title]
-        fail_msg: >-
-          `{{ vikunja_molecule_sqlite_path }}` holds `{{ vikunja_sqlite_tasks.stdout }}`,
-          not the `{{ vikunja_molecule_task_title }}` that was created over the API
-        success_msg: "The SQLite database at `{{ vikunja_molecule_sqlite_path }}` holds the task created over the API"
+        - name: Assert that the SQLite database holds the task created over the API
+          ansible.builtin.assert:
+            that: vikunja_sqlite_tasks.stdout.split(',') == [vikunja_molecule_task_title]
+            fail_msg: >-
+              `{{ vikunja_molecule_sqlite_path }}` holds `{{ vikunja_sqlite_tasks.stdout }}`,
+              not the `{{ vikunja_molecule_task_title }}` that was created over the API
+            success_msg: "The SQLite database at `{{ vikunja_molecule_sqlite_path }}` holds the task created over the API"
 
-    # The user was created by the role's own `user create` invocation, which
-    # goes through the CLI rather than the API. Finding it in the same file
-    # proves both paths write to the one store this scenario configured.
-    - name: Read the users Vikunja stored, out of its SQLite database
-      ansible.builtin.command:
-        argv:
-          - python3
-          - "-c"
-          - |
-            import sqlite3
-            import sys
+        # The user was created by the role's own `user create` invocation, which
+        # goes through the CLI rather than the API. Finding it in the same file
+        # proves both paths write to the one store this scenario configured.
+        - name: Read the users Vikunja stored, out of its SQLite database
+          ansible.builtin.command:
+            argv:
+              - python3
+              - "-c"
+              - |
+                import sqlite3
+                import sys
 
-            connection = sqlite3.connect('file:%s?mode=ro' % sys.argv[1], uri=True)
-            print(','.join(row[0] for row in connection.execute('SELECT username FROM users ORDER BY id')))
-          - "{{ vikunja_molecule_sqlite_path }}"
-      register: vikunja_sqlite_users
-      changed_when: false
+                connection = sqlite3.connect('file:%s?mode=ro' % sys.argv[1], uri=True)
+                print(','.join(row[0] for row in connection.execute('SELECT username FROM users ORDER BY id')))
+              - "{{ vikunja_molecule_sqlite_path }}"
+          register: vikunja_sqlite_users
+          changed_when: false
 
-    - name: Assert that the SQLite database holds the user the role created
-      ansible.builtin.assert:
-        that: vikunja_sqlite_users.stdout.split(',') == [vikunja_molecule_probe_username]
-        fail_msg: >-
-          `{{ vikunja_molecule_sqlite_path }}` holds users `{{ vikunja_sqlite_users.stdout }}`,
-          not the `{{ vikunja_molecule_probe_username }}` the role created
-        success_msg: "The SQLite database holds `{{ vikunja_molecule_probe_username }}`, created through the role"
+        - name: Assert that the SQLite database holds the user the role created
+          ansible.builtin.assert:
+            that: vikunja_sqlite_users.stdout.split(',') == [vikunja_molecule_probe_username]
+            fail_msg: >-
+              `{{ vikunja_molecule_sqlite_path }}` holds users `{{ vikunja_sqlite_users.stdout }}`,
+              not the `{{ vikunja_molecule_probe_username }}` the role created
+            success_msg: "The SQLite database holds `{{ vikunja_molecule_probe_username }}`, created through the role"
 
       rescue:
         # Whatever went wrong, the reason is almost always in the systemd service log.
