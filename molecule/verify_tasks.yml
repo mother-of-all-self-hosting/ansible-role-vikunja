@@ -30,13 +30,14 @@
   ansible.builtin.set_fact:
     vikunja_molecule_api_url: "http://127.0.0.1:{{ vikunja_container_http_host_bind_port }}/api/v1"
 
-- name: Wait for the Vikunja systemd service to become active (up to 180s)
+- name: Wait for the Vikunja systemd services to become active (up to 180s each)
   ansible.builtin.systemd_service:
-    name: vikunja.service
-  register: vikunja_service
-  until: vikunja_service.status.ActiveState == 'active'
+    name: "{{ item }}"
+  register: vikunja_services
+  until: vikunja_services.status.ActiveState == 'active'
   retries: 36
   delay: 5
+  loop: "{{ vikunja_verify_units }}"
   # So that giving up is reported by the assertion below rather than as a
   # wall of systemd unit properties.
   failed_when: false
@@ -44,17 +45,20 @@
 # `Restart=always` in the systemd unit means that even a container which crashes
 # and gets restarted reads as active here, so this is a precondition rather than
 # a result.
-- name: Assert the Vikunja systemd service is active
+- name: Assert the Vikunja systemd services are active
   ansible.builtin.assert:
-    that: vikunja_service.status.ActiveState == 'active'
-    fail_msg: "vikunja.service is not active ({{ vikunja_service.status.ActiveState }})"
-    success_msg: "vikunja.service is active"
+    that: vikunja_services.results | map(attribute='status.ActiveState') | unique | list == ['active']
+    fail_msg: >-
+      Not every service is active:
+      {{ dict(vikunja_verify_units | zip(vikunja_services.results | map(attribute='status.ActiveState'))) }}
+    success_msg: "Every systemd service is active"
 
-- name: Retrieve the Vikunja systemd service log for debugging
+- name: Retrieve the Vikunja systemd services log for debugging
   when: vikunja_debug_service_enabled | bool
   ansible.builtin.command:
-    cmd: journalctl --no-pager --output=cat --unit=vikunja.service
+    cmd: "journalctl --no-pager --output=cat --unit={{ item }}"
   changed_when: false
+  loop: "{{ vikunja_verify_units }}"
 
 ########################################################################
 #                                                                      #

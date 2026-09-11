@@ -9,6 +9,12 @@
   hosts: all
   become: true
   gather_facts: false
+
+  vars:
+    vikunja_verify_units:
+      - vikunja.service
+      - mariadb.service
+
   tasks:
     - name: Verify that Vikunja works
       block:
@@ -86,6 +92,11 @@
             that: not vikunja_sqlite_file.stat.exists
             fail_msg: "Vikunja wrote a SQLite database at `{{ vikunja_molecule_sqlite_path }}` despite being pointed at MariaDB"
             success_msg: "Vikunja wrote no SQLite database, so MariaDB is its only store"
+
+        - name: Show the Vikunja verification summary
+          ansible.builtin.debug:
+            msg:
+              - "Vikunja systemd: {% for unit, state in vikunja_verify_units | zip(vikunja_services.results | map(attribute='status.ActiveState')) %}{{ unit }} ({{ state }}){% if not loop.last %}, {% endif %}{% endfor %}"
 
       rescue:
         # Whatever went wrong, the reason is almost always in the systemd service log.
