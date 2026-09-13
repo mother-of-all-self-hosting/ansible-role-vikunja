@@ -30,6 +30,7 @@ provisioner:
       all:
         # Helper variables
         vikunja_debug_service_enabled: false
+        vikunja_restarts_check_enabled: true
         # The user that verify.yml creates through the role's own
         # `user create` task file and then logs in as over the API.
         # Registration is disabled, so that is the only way in.
