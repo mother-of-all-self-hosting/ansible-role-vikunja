@@ -9,10 +9,10 @@ roles:
     version: v18.6-2
 ||||||| Stash base
   - src: https://github.com/mother-of-all-self-hosting/ansible-role-postgres
-    version: v18.6-1
+    version: v18.6-2
 =======
   - src: git+https://github.com/mother-of-all-self-hosting/ansible-role-postgres.git
-    version: v18.6-1
+    version: v18.6-2
 >>>>>>> Stashed changes
     name: ansible-role-postgres
   - src: git+https://github.com/devture/com.devture.ansible.role.playbook_help.git
