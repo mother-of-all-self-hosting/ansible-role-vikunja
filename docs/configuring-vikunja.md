@@ -202,7 +202,7 @@ vikunja_environment_variables_ratelimit_enabled: true
 
 Vikunja can natively expose metrics to Prometheus.
 
-If you are looking for an integration, you can check out the MASH playbook. See [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/vikunja.md#integrating-with-prometheus-optional) for more information.
+If you are looking for an integration, you can check out the MASH playbook. Refer to [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/vikunja.md#integrating-with-prometheus-optional) for more information.
 
 ### Extending the configuration
 
@@ -212,7 +212,7 @@ Take a look at:
 
 - [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `vikunja_environment_variables_additional_variables` variable
 
-See [the official documentation](https://vikunja.io/docs/config-options/) for a complete list of Vikunja's config options that you can put in `vikunja_environment_variables_additional_variables`.
+Refer to [the official documentation](https://vikunja.io/docs/config-options/) for a complete list of Vikunja's config options that you can put in `vikunja_environment_variables_additional_variables`.
 
 ## Installing
 
@@ -272,7 +272,7 @@ For example, you can run the command `version` by running the playbook with the 
 ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command='version'
 ```
 
-See [this page](https://vikunja.io/docs/cli/) for the list of available commands.
+Refer to [this page](https://vikunja.io/docs/cli/) for the list of available commands.
 
 ### Typesense integration for enhanced search capabilities
 
