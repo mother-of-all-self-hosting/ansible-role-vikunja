@@ -151,19 +151,19 @@ To configure it, add the following configuration to your `vars.yml` file as belo
 # Set to `true` to enable mailer
 vikunja_mailer_enabled: true
 
-# Set the hostname of the SMTP server
+# Specify SMTP server hostname
 vikunja_environment_variables_smtp_host: ""
 
-# Set the port number of the SMTP server
+# Specify SMTP server port number
 vikunja_environment_variables_smtp_port: 587
 
-# Set the username for the SMTP server
+# Specify SMTP server username
 vikunja_environment_variables_smtp_user: ""
 
-# Set the password for the SMTP server
+# Specify SMTP server password
 vikunja_environment_variables_smtp_password: ""
 
-# Set the email address that emails will be sent from
+# Specify the email address that emails will be sent from
 vikunja_environment_variables_smtp_from: ""
 
 # Specify the SMTP Auth Type
@@ -173,7 +173,7 @@ vikunja_environment_variables_smtp_authtype: plain
 # Set to `true` to skip verification of the TLS certificate on the server
 vikunja_environment_variables_skiptlsverify: false
 
-# Set to `true` to make Vikunja use SSL instead of STARTTLS.
+# Set to `true` to use SSL instead of STARTTLS
 vikunja_environment_variables_smtp_forcessl: false
 ```
 
