@@ -173,7 +173,7 @@ vikunja_environment_variables_smtp_authtype: plain
 # Set to `true` to skip verification of the TLS certificate on the server
 vikunja_environment_variables_skiptlsverify: false
 
-# Set to `true` to use SSL instead of STARTTLS
+# Set to `true` to enable SSL encryption instead of STARTTLS
 vikunja_environment_variables_smtp_forcessl: false
 ```
 
