@@ -79,7 +79,7 @@ vikunja_environment_variables_service_secret: YOUR_SECRET_KEY_HERE
 
 #### Specify database
 
-It is necessary to select database used by Vikunja from a MySQL compatible database, Postgres, and SQLite.
+Vikunja can use either a MySQL compatible database, Postgres, or SQLite, and you need to choose one.
 
 To use Postgres, add the following configuration to your `vars.yml` file:
 
