@@ -89,7 +89,7 @@ vikunja_database_type: postgres
 
 Set `mysql` to use a MySQL compatible database and `sqlite` to use SQLite, respectively. The SQLite database is stored in the directory specified with `vikunja_database_path`.
 
-For other settings, check variables such as `vikunja_database_postgres_*` and `vikunja_database_mysql_*` on [`defaults/main.yml`](../defaults/main.yml).
+For other settings, check variables such as `vikunja_database_mysql_*` and `vikunja_database_postgres_*` on [`defaults/main.yml`](../defaults/main.yml).
 
 #### Configuring connection to the database server (optional)
 
