@@ -202,7 +202,7 @@ vikunja_environment_variables_ratelimit_enabled: true
 
 Vikunja can natively expose metrics to Prometheus.
 
-If you are looking for an integration, you can check out the MASH playbook. Refer to [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/docs/services/vikunja.md#integrating-with-prometheus-optional) for more information.
+If you are looking for an integration, you can check out the MASH playbook. Refer to [this section of the documentation on the playbook](https://github.com/mother-of-all-self-hosting/mash-playbook/blob/main/components/vikunja/README.md#integrating-with-prometheus-optional) for more information.
 
 ### Extending the configuration
 
