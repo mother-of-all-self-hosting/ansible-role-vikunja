@@ -73,8 +73,8 @@ provisioner:
 
         # Variables required for Vikunja to connect to the Postgres database (via Unix socket)
         vikunja_database_type: postgres
-        vikunja_database_postgres_username: my_database_username
-        vikunja_database_postgres_password: my_database_password
+        vikunja_database_postgres_username: /#@my_database_username?%
+        vikunja_database_postgres_password: /#@my_database_password?%
         vikunja_database_postgres_sslmode: disable
         vikunja_database_name: vikunja
         vikunja_database_postgres_socket_enabled: true

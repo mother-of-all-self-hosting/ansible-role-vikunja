@@ -73,8 +73,8 @@ provisioner:
 
         # Variables required for Vikunja to connect to the MariaDB database (via Unix socket)
         vikunja_database_type: mysql
-        vikunja_database_mysql_username: my_database_username
-        vikunja_database_mysql_password: my_database_password
+        vikunja_database_mysql_username: /#@my_database_username?%
+        vikunja_database_mysql_password: /#@my_database_password?%
         vikunja_database_name: vikunja
         vikunja_database_mysql_socket_enabled: true
         vikunja_database_mysql_socket_path_host: "{{ mariadb_run_path }}"
