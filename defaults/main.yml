@@ -254,7 +254,7 @@ vikunja_container_cleanup_command: |
 ########################################################################
 
 # Specify a database driver to use
-# Valid values: mysql, postgres, sqlite
+# Valid values: mysql, paradedb, postgres, sqlite
 vikunja_database_type: ""
 
 # Specify database configuration
@@ -271,6 +271,14 @@ vikunja_database_postgres_password: ""
 # By default, we expect a local container (without SSL), so attempting SSL connections is not necessary.
 # Valid values: see https://www.postgresql.org/docs/11/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS
 vikunja_database_postgres_sslmode: disable
+vikunja_database_paradedb_hostname: ""
+vikunja_database_paradedb_port: 5432
+vikunja_database_paradedb_username: vikunja
+vikunja_database_paradedb_password: ""
+# Specify SSL mode for Postgres database server
+# By default, we expect a local container (without SSL), so attempting SSL connections is not necessary.
+# Valid values: see https://www.paradedbql.org/docs/11/libpq-ssl.html#LIBPQ-SSL-SSLMODE-STATEMENTS
+vikunja_database_paradedb_sslmode: disable
 vikunja_database_name: vikunja
 
 # Control if the database connection to MySQL is made via a Unix socket
@@ -291,9 +299,19 @@ vikunja_database_postgres_socket_path_container: /run-postgres
 # Specify the path to the Postgres Unix socket path on the host (bind-mount source)
 vikunja_database_postgres_socket_path_host: ""
 
+# Control if the database connection to ParadeDB is made via a Unix socket
+vikunja_database_paradedb_socket_enabled: true
+
+# Specify the path to the ParadeDB Unix socket path inside the Vikunja container
+vikunja_database_paradedb_socket_path_container: /run-paradedb
+
+# Specify the path to the ParadeDB Unix socket path on the host (bind-mount source)
+vikunja_database_paradedb_socket_path_host: ""
+
 # Specify database host address and port or absolute path for Unix socket
 vikunja_database_environment_variables_database_host_mysql: "{{ vikunja_database_mysql_socket_path_container + '/mysqld.sock' if vikunja_database_mysql_socket_enabled else vikunja_database_mysql_hostname + ':' + vikunja_database_mysql_port | string }}"
 vikunja_database_environment_variables_database_host_postgres: "{{ vikunja_database_postgres_socket_path_container if vikunja_database_postgres_socket_enabled else vikunja_database_postgres_hostname + ':' + vikunja_database_postgres_port | string }}"
+vikunja_database_environment_variables_database_host_paradedb: "{{ vikunja_database_paradedb_socket_path_container if vikunja_database_paradedb_socket_enabled else vikunja_database_paradedb_hostname + ':' + vikunja_database_paradedb_port | string }}"
 
 ########################################################################
 #                                                                      #
@@ -352,11 +370,6 @@ vikunja_environment_variables_redis_host: |-
 vikunja_users: "{{ vikunja_users_auto + vikunja_users_custom }}"
 vikunja_users_auto: []
 vikunja_users_custom: []
-
-# Specify Typesense instance configuration
-vikunja_environment_variables_typesense_enabled: false
-vikunja_environment_variables_typesense_url: ""
-vikunja_environment_variables_typesense_apikey: ""
 
 # Specify the timezone
 vikunja_environment_variables_tz: UTC

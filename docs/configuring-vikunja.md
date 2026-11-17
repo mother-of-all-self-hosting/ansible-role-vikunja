@@ -29,9 +29,16 @@ See the project's [documentation](https://vikunja.io/docs/) to learn what Vikunj
 
 ## Prerequisites
 
-To run a Vikunja instance it is necessary to prepare a database. You can use a [MySQL](https://www.mysql.com/) compatible database server, [Postgres](https://www.postgresql.org/), or [SQLite](https://www.sqlite.org/). The SQLite database file will be automatically created by the service if it is enabled.
+To run a Vikunja instance it is necessary to prepare a database. You can use a [MySQL](https://www.mysql.com/) compatible database server, [Postgres](https://www.postgresql.org/) ([ParadeDB](../paradedb/README.md)), or [SQLite](https://www.sqlite.org/). The SQLite database file will be automatically created by the service if it is enabled.
 
-If you are looking for Ansible roles for a MySQL compatible server or Postgres, you can check out [ansible-role-mariadb](https://github.com/mother-of-all-self-hosting/ansible-role-mariadb) and [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres), both of which are maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
+>[!NOTE]
+> Using ParadeDB is necessary for full-text search. Refer to [this section](https://vikunja.io/docs/paradedb/#migration-from-typesense) on the official documentation for details about migrating from Typesense.
+
+If you are looking for Ansible roles for a MySQL compatible server, ParadeDB, Postgres, you can check out these ones, maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team:
+
+- [ansible-role-mariadb](https://github.com/mother-of-all-self-hosting/ansible-role-mariadb)
+- [ansible-role-paradedb](https://github.com/mother-of-all-self-hosting/ansible-role-paradedb)
+- [ansible-role-postgres](https://github.com/mother-of-all-self-hosting/ansible-role-postgres)
 
 ## Adjusting the playbook configuration
 
@@ -79,7 +86,7 @@ vikunja_environment_variables_service_secret: YOUR_SECRET_KEY_HERE
 
 #### Specify database
 
-Vikunja can use either a MySQL compatible database, Postgres, or SQLite, and you need to choose one.
+Vikunja can use either a MySQL compatible database, Postgres (ParadeDB), or SQLite, and you need to choose one.
 
 To use Postgres, add the following configuration to your `vars.yml` file:
 
@@ -87,7 +94,7 @@ To use Postgres, add the following configuration to your `vars.yml` file:
 vikunja_database_type: postgres
 ```
 
-Set `mysql` to use a MySQL compatible database and `sqlite` to use SQLite, respectively. The SQLite database is stored in the directory specified with `vikunja_database_path`.
+Set `mysql` to use a MySQL compatible database, `paradedb` to use ParadeDB, and `sqlite` to use SQLite, respectively. The SQLite database is stored in the directory specified with `vikunja_database_path`.
 
 For other settings, check variables such as `vikunja_database_*` on [`defaults/main.yml`](../defaults/main.yml).
 
@@ -271,26 +278,6 @@ ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command='ver
 ```
 
 Refer to [this page](https://vikunja.io/docs/cli/) for the list of available commands.
-
-### Typesense integration for enhanced search capabilities
-
-Vikunja supports [Typesense](https://typesense.org/), which allows fast fulltext search with fuzzy matching support. To enable it, the following configuration to your `vars.yml` file:
-
-```yaml
-vikunja_environment_variables_typesense_enabled: true
-vikunja_environment_variables_typesense_url: TYPESENSE_INSTANCE_URL_HERE
-vikunja_environment_variables_typesense_apikey: TYPESENSE_ADMIN_API_KEY_HERE
-```
-
-Make sure to replace `TYPESENSE_INSTANCE_URL_HERE` and `TYPESENSE_ADMIN_API_KEY_HERE` with your own values.
-
-After adding the configuration and restarting the service, it is necessary to run `vikunja index` to have Typesense index tasks in the Vikunja instance. You can invoke it by running the playbook below:
-
-```sh
-ansible-playbook -i inventory/hosts setup.yml --tags=cli-vikunja -e command='index'
-```
-
-Refer to [this page](https://vikunja.io/docs/typesense/) as well.
 
 ## Troubleshooting
 

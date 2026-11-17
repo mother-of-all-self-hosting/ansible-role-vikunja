@@ -42,6 +42,9 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {% if vikunja_database_type == 'mysql' and vikunja_database_mysql_socket_enabled and vikunja_database_mysql_socket_path_host != '' %}
       --mount type=bind,src={{ vikunja_database_mysql_socket_path_host }},dst={{ vikunja_database_mysql_socket_path_container }} \
       {% endif %}
+      {% if vikunja_database_type == 'paradedb' and vikunja_database_paradedb_socket_enabled and vikunja_database_paradedb_socket_path_host != '' %}
+      --mount type=bind,src={{ vikunja_database_paradedb_socket_path_host }},dst={{ vikunja_database_paradedb_socket_path_container }} \
+      {% endif %}
       {% if vikunja_database_type == 'postgres' and vikunja_database_postgres_socket_enabled and vikunja_database_postgres_socket_path_host != '' %}
       --mount type=bind,src={{ vikunja_database_postgres_socket_path_host }},dst={{ vikunja_database_postgres_socket_path_container }} \
       {% endif %}
