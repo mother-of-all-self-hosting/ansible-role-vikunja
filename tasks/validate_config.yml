@@ -28,9 +28,6 @@
   with_items:
     - vikunja_uid
     - vikunja_gid
-    - vikunja_hostname
-    - vikunja_path_prefix
-    - vikunja_container_network
     - vikunja_database_type
     - vikunja_environment_variables_service_secret
 
