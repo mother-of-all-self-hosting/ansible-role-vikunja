@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2023, 2024 Julian-Samuel Gebühr
 # SPDX-FileCopyrightText: 2023, 2024 Nikita Chernyi
-# SPDX-FileCopyrightText: 2023, 2025 MASH project contributors
+# SPDX-FileCopyrightText: 2023-2025 MASH project contributors
 # SPDX-FileCopyrightText: 2023-2026 Slavi Pantaleev
 # SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
 # SPDX-FileCopyrightText: 2025, 2026 Suguru Hirahara
+# SPDX-FileCopyrightText: 2026 Timofej Luitle
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -383,6 +384,20 @@ vikunja_environment_variables_service_publicurl: "{{ vikunja_scheme }}://{{ viku
 
 # Control if user registration is allowed
 vikunja_environment_variables_service_enableregistration: false
+
+# Specify method for extracting client IP addresses
+vikunja_environment_variables_vikunja_service_ipextractionmethod: "{{ 'xff' if vikunja_container_labels_traefik_enabled else 'direct' }}"
+
+# Specicy a comma-separated list of trusted proxy addresses
+#
+# The default below trusts the loopback and all private (RFC1918) address ranges,
+# which covers reverse proxies (e.g. Traefik) reaching Tinyauth over a local container network.
+vikunja_environment_variables_vikunja_service_trustedproxies:
+  - 127.0.0.0/8
+  - ::1/128
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
 
 # Specify a log level
 # Valid values: CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG

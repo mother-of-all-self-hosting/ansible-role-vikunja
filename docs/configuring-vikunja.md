@@ -13,6 +13,7 @@ SPDX-FileCopyrightText: 2023 Antonis Christofides
 SPDX-FileCopyrightText: 2023 Felix Stupp
 SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
 SPDX-FileCopyrightText: 2023 Pierre 'McFly' Marty
+SPDX-FileCopyrightText: 2024 Sergio Durigan Junior
 SPDX-FileCopyrightText: 2024 Thomas Miceli
 SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
@@ -186,6 +187,20 @@ vikunja_environment_variables_smtp_forcessl: false
 
 >[!WARNING]
 > Without setting an authentication method such as DKIM, SPF, and DMARC for your hostname, emails are most likely to be quarantined as spam at recipient's mail servers. The worst scenario is that your server's IP address or hostname will be included in the spam list such as the one managed by [Spamhaus](https://www.spamhaus.org/). If you have set up a mail server with the [MASH project's exim-relay Ansible role](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay), you can enable DKIM signing with it. Refer [its documentation](https://github.com/mother-of-all-self-hosting/ansible-role-exim-relay/blob/main/docs/configuring-exim-relay.md#enable-dkim-support-optional) for details.
+
+### Configuring trusted reverse proxies (optional)
+
+Vikunja determines the actual client IP address from `X-Forwarded-For` / `X-Real-IP` headers only if the request comes from a trusted reverse proxy (refer to [`VIKUNJA_SERVICE_TRUSTEDPROXIES`](https://vikunja.io/docs/config-options/#1-service-trustedproxies)).
+
+Since this role typically runs Vikunja behind a reverse proxy (e.g. Traefik) on a container network, it trusts the loopback and all private (RFC1918) address ranges by default.
+
+To adjust the list of trusted proxies, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+vikunja_environment_variables_vikunja_service_trustedproxies:
+  - 127.0.0.0/8
+  - ::1/128
+```
 
 ### Enabling user registration
 
