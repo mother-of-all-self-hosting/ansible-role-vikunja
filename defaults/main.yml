@@ -391,7 +391,7 @@ vikunja_environment_variables_vikunja_service_ipextractionmethod: "{{ 'xff' if v
 # Specicy a comma-separated list of trusted proxy addresses
 #
 # The default below trusts the loopback and all private (RFC1918) address ranges,
-# which covers reverse proxies (e.g. Traefik) reaching Tinyauth over a local container network.
+# which covers reverse proxies (e.g. Traefik) reaching Vikunja over a local container network.
 vikunja_environment_variables_vikunja_service_trustedproxies:
   - 127.0.0.0/8
   - ::1/128
