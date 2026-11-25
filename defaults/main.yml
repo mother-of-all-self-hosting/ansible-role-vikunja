@@ -388,7 +388,7 @@ vikunja_environment_variables_service_enableregistration: false
 # Specify method for extracting client IP addresses
 vikunja_environment_variables_vikunja_service_ipextractionmethod: "{{ 'xff' if vikunja_container_labels_traefik_enabled else 'direct' }}"
 
-# Specicy a comma-separated list of trusted proxy addresses
+# Specify a comma-separated list of trusted proxy addresses
 #
 # The default below trusts the loopback and all private (RFC1918) address ranges,
 # which covers reverse proxies (e.g. Traefik) reaching Vikunja over a local container network.
